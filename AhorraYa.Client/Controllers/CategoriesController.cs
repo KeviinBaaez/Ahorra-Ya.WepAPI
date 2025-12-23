@@ -20,7 +20,7 @@ namespace AhorraYa.WebClient.Controllers
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = baseAddress;
             _mapper = mapper;
-            _jwtToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6ImE0NmM1ZmY3LTJkNDktNDNiMS0wZDM1LTA4ZGUyMjJkMzI2MyIsInN1YiI6ImE0NmM1ZmY3LTJkNDktNDNiMS0wZDM1LTA4ZGUyMjJkMzI2MyIsIm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwicm9sZSI6IkFkbWluIiwibmJmIjoxNzY0MzQ4NDYxLCJleHAiOjE3NjQzNjI4NjEsImlhdCI6MTc2NDM0ODQ2MX0.NpS6OqAzL43YdmJNTsX5sbxN604D7Q5maKZBKkN2AhoEN7xyk7uqBOB9EOs4Kj_bLtbldjC14PHJz3xk6jIfsA";
+            _jwtToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6ImE0NmM1ZmY3LTJkNDktNDNiMS0wZDM1LTA4ZGUyMjJkMzI2MyIsInN1YiI6ImE0NmM1ZmY3LTJkNDktNDNiMS0wZDM1LTA4ZGUyMjJkMzI2MyIsIm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwicm9sZSI6IkFkbWluIiwibmJmIjoxNzY2NTE0NDM5LCJleHAiOjE3NjY1Mjg4MzksImlhdCI6MTc2NjUxNDQzOX0.8s3sSblUlQ8_Yq_AnocV-4zwOuwUhwl_YkLR58NTezKSsTFrJh0hFklE9tOhuiZjqDpUZedxuH4ZZRxWD5fMqA";
         }
 
         [HttpGet]
@@ -36,9 +36,8 @@ namespace AhorraYa.WebClient.Controllers
                 string data = await response.Content.ReadAsStringAsync();
                 list = JsonConvert.DeserializeObject<List<CategoryListVm>>(data);
             }
-
             ViewBag.CurrentSearchText = searchText;
-            ViewBag.OrderCategories = orderCategories;
+            ViewBag.CurrentOrderCategories = orderCategories ?? "A-Z";
 
             return View(list);
         }
@@ -94,22 +93,22 @@ namespace AhorraYa.WebClient.Controllers
                     var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
                     HttpResponseMessage response;
-                    string succesMessage;
+                    string successMessage;
                     if (categoryRequest.Id == 0)
                     {
                         response = await _httpClient.PostAsync("api/Categories/Create", content);
-                        succesMessage = "successfully created category";
+                        successMessage = "successfully created category";
                     }
                     else
                     {
                         string url = $"api/Categories/Update?id={categoryRequest.Id}";
                         response = await _httpClient.PutAsync(url, content);
-                        succesMessage = "successfully update category";
+                        successMessage = "successfully update category";
                     }
 
                     if (response.IsSuccessStatusCode)
                     {
-                        TempData["success"] = succesMessage;
+                        TempData["success"] = successMessage;
                         return RedirectToAction(nameof(Index));
                     }
                     else

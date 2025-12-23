@@ -59,53 +59,6 @@ namespace AhorraYa.WebApi.Controllers
                 {
                     return NotFound("No records were found.");
                 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                //var categories = _mapper.Map<IList<CategoryResponseDto>>(_category.GetAll());
-                //if (categories.Count > 0)
-                //{
-                //    if(searchText is null)
-                //    {
-                //        return Ok(categories);
-                //    }
-                //    else
-                //    {
-                //        var listaCoincidencias = new List<CategoryResponseDto>();
-                //        foreach (var item in categories)
-                //        {
-                //            if (item.CategoryName.Contains(searchText))
-                //            {
-                //                listaCoincidencias.Add(item);
-                //            }
-                //        }
-                //        if (listaCoincidencias.Count > 0)
-                //        {
-                //            return Ok(_mapper.Map<IList<CategoryResponseDto>>(listaCoincidencias));
-                //        }
-                //        //Esto esta de más, es provisorio.
-                //        else
-                //        {
-                //            throw new ExceptionIdNotFound(typeof(Category), searchText);
-                //        }
-                //    }
-
-                //}
-                //else
-                //{
-                //    return NotFound("No records were found.");
-                //}
             }
             catch (ExceptionByServiceConnection ex)
             {

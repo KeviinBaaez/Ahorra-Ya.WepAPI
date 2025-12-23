@@ -16,14 +16,14 @@
 			</div>
 			<div class="col-md-4 col-lg-3">
 				<label for="orderCategories" class="form-label mb-0">Order By</label>
-				<select class="form-select" id="orderCategories" name="orderCategories">
+				<select class="form-select" id="orderCategories" name="orderCategories" onchange="this.form.submit()">
 					<option value="A-Z" selected="@(ViewBag.CurrentOrderCategories == "A-Z")">A-Z</option>
 					<option value="Z-A" selected="@(ViewBag.CurrentOrderCategories == "Z-A")">Z-A</option>
 				</select>
 			</div>
 			<div class="col-md-3 col-lg-5 d-flex align-items-end justify-content-md-start justify-content-lg-end">
 				<button type="submit" class="btn btn-primary me-2 flex-grow-1 flex-md-grow-0">
-					<i class="bi bi-search"></i>Search / Apply Order
+					<i class="bi bi-search"></i>Search
 				</button>
 				<a class="btn btn-secondary flex-grow-1 flex-md-grow-1" href="@Url.Action("Index", "Categories")">
 					<i class="bi bi-arrow-clockwise"></i>Clear
