@@ -19,8 +19,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AhorraYa.Enums", "AhorraYa.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AhorraYa.Application", "AhorraYa.Aplication\AhorraYa.Application.csproj", "{9DD28386-DB5E-455B-A2A5-ABA3D41AA47A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AhorraYa.Proyects", "AhorraYa.Proyects\AhorraYa.Proyects.csproj", "{51C9F7EC-84A3-4C00-A78A-2D39D6181330}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AhorraYa.Exceptions", "AhorraYa.Exceptions\AhorraYa.Exceptions.csproj", "{FBB6611C-C416-45B7-8D75-F84A4612AA82}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AhorraYa.WebClient", "AhorraYa.Client\AhorraYa.WebClient.csproj", "{5FDB61EF-A885-47BA-AAF5-C866C03E5CAA}"
@@ -63,10 +61,6 @@ Global
 		{9DD28386-DB5E-455B-A2A5-ABA3D41AA47A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DD28386-DB5E-455B-A2A5-ABA3D41AA47A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DD28386-DB5E-455B-A2A5-ABA3D41AA47A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{51C9F7EC-84A3-4C00-A78A-2D39D6181330}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{51C9F7EC-84A3-4C00-A78A-2D39D6181330}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{51C9F7EC-84A3-4C00-A78A-2D39D6181330}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{51C9F7EC-84A3-4C00-A78A-2D39D6181330}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FBB6611C-C416-45B7-8D75-F84A4612AA82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FBB6611C-C416-45B7-8D75-F84A4612AA82}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBB6611C-C416-45B7-8D75-F84A4612AA82}.Release|Any CPU.ActiveCfg = Release|Any CPU

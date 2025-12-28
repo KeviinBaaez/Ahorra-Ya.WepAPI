@@ -21,7 +21,7 @@ namespace AhorraYa.WebClient.Controllers
             _httpClient.BaseAddress = baseAddress;
             _mapper = mapper;
             //Una vez autorizado mediante la webAPI, establecer tu nuevo token aquí.
-            _jwtToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6ImE0NmM1ZmY3LTJkNDktNDNiMS0wZDM1LTA4ZGUyMjJkMzI2MyIsInN1YiI6ImE0NmM1ZmY3LTJkNDktNDNiMS0wZDM1LTA4ZGUyMjJkMzI2MyIsIm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwicm9sZSI6IkFkbWluIiwibmJmIjoxNzY2NTE0NDM5LCJleHAiOjE3NjY1Mjg4MzksImlhdCI6MTc2NjUxNDQzOX0.8s3sSblUlQ8_Yq_AnocV-4zwOuwUhwl_YkLR58NTezKSsTFrJh0hFklE9tOhuiZjqDpUZedxuH4ZZRxWD5fMqA";
+            _jwtToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFhZGRmNzRhLWE2OGYtNDRkZS04MmViLTA4ZGU0NWFhZGY2YSIsInN1YiI6IjFhZGRmNzRhLWE2OGYtNDRkZS04MmViLTA4ZGU0NWFhZGY2YSIsIm5hbWUiOiJBZG1pbiIsImVtYWlsIjoiYWRtaW5AYWhvcnJheWEuY29tIiwicm9sZSI6IkFkbWluIiwibmJmIjoxNzY2ODgzMDA3LCJleHAiOjE3NjY4OTc0MDcsImlhdCI6MTc2Njg4MzAwN30.PkC0taXnNSyVfhHEy3pUOcyWlDQeBPrST76HLp6s3c7f_3e-OvD-PtSd6hNGX7w5z7UGh0GpYfPfSkeQtaGDJg";
         }
 
         [HttpGet]

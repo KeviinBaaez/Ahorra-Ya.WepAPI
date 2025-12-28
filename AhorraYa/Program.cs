@@ -8,6 +8,7 @@ using AhorraYa.Repository.Interfaces;
 using AhorraYa.Repository.Repositories;
 using AhorraYa.Services.Interfaces;
 using AhorraYa.Services.Services;
+using AhorraYa.WebApi.Seed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -122,5 +123,12 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+
+using(var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await IdentitySeeder.SeedAsync(services);
+}
 
 app.Run();
