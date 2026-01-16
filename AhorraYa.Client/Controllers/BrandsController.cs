@@ -1,5 +1,5 @@
 ﻿using AhorraYa.Application.Dtos.Brand;
-using AhorraYa.WebClient.ViewModels.Brand;
+using AhorraYa.WebClient.ViewModels.Brands;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -21,7 +21,7 @@ namespace AhorraYa.WebClient.Controllers
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = baseAddress;
             //Una vez autorizado mediante la webAPI, establecer tu nuevo token aquí.
-            _jwtToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFhZGRmNzRhLWE2OGYtNDRkZS04MmViLTA4ZGU0NWFhZGY2YSIsInN1YiI6IjFhZGRmNzRhLWE2OGYtNDRkZS04MmViLTA4ZGU0NWFhZGY2YSIsIm5hbWUiOiJBZG1pbiIsImVtYWlsIjoiYWRtaW5AYWhvcnJheWEuY29tIiwicm9sZSI6IkFkbWluIiwibmJmIjoxNzY2ODgzMDA3LCJleHAiOjE3NjY4OTc0MDcsImlhdCI6MTc2Njg4MzAwN30.PkC0taXnNSyVfhHEy3pUOcyWlDQeBPrST76HLp6s3c7f_3e-OvD-PtSd6hNGX7w5z7UGh0GpYfPfSkeQtaGDJg";
+            _jwtToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjJlZDM4OTZjLWM2ZDUtNDUzYi1hMzE4LTA4ZGU1NDgwZmM5NyIsInN1YiI6IjJlZDM4OTZjLWM2ZDUtNDUzYi1hMzE4LTA4ZGU1NDgwZmM5NyIsIm5hbWUiOiJBZG1pbiIsImVtYWlsIjoiYWRtaW5AYWhvcnJheWEuY29tIiwicm9sZSI6IkFkbWluIiwibmJmIjoxNzY4NTI0MTEzLCJleHAiOjE3Njg1Mzg1MTMsImlhdCI6MTc2ODUyNDExM30.uLKewq1qRyMKA-18IfeXYOfUZu7MilKdzufguUPlZ_Ric0-wP02eXUbFEogmkYvY26LHAZf0wGg_gLXIRlck3Q";
         }
         [HttpGet]
         public async Task<IActionResult> Index(string? searchText, string? orderBrands)
@@ -45,7 +45,7 @@ namespace AhorraYa.WebClient.Controllers
         }
 
         public async Task<IActionResult> Upsert(int? id)
-        {
+        { 
             if (id is null || id == 0)
             {
                 var model = new BrandEditVm()
@@ -73,7 +73,7 @@ namespace AhorraYa.WebClient.Controllers
                     BrandEditVm brandVm = _mapper.Map<BrandEditVm>(brandRequestDto);
                     return View(brandVm);
                 }
-                return NotFound($"Category With Id {id} Not Found. API status: {response.StatusCode}");
+                return NotFound($"Brand With Id {id} Not Found. API status: {response.StatusCode}");
             }
             catch (Exception)
             {
@@ -102,13 +102,13 @@ namespace AhorraYa.WebClient.Controllers
                     if (brandRequestDto.Id == 0)
                     {
                         response = await _httpClient.PostAsync("api/Brands/Create", content);
-                        successMessage = "successfully created Brand";
+                        successMessage = "successfully created brand";
                     }
                     else
                     {
                         string url = $"api/Brands/Update?id={brandRequestDto.Id}";
                         response = await _httpClient.PutAsync(url, content);
-                        successMessage = "successfully update category";
+                        successMessage = "successfully update brand";
                     }
 
                     if (response.IsSuccessStatusCode)

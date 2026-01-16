@@ -7,6 +7,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 namespace AhorraYa.WebApi.Controllers
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -38,11 +39,27 @@ namespace AhorraYa.WebApi.Controllers
 
         [HttpGet("All")]
         [Authorize(Roles = "Admin, ViewerPlus, Viewer")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(string? searchText, string? orderBy="A-Z")
         {
             try
             {
-                var products = _mapper.Map<IList<ProductResponseDto>>(_product.GetAll());
+                Func<IQueryable<Product>, IOrderedQueryable<Product>>? productOrder = null;
+                if(orderBy == "A-Z")
+                {
+                    productOrder = p => p.OrderBy(p => p.Name);
+                }
+                else
+                {
+                    productOrder = p => p.OrderByDescending(p => p.Name);
+                }
+
+                Expression<Func<Product, bool>>? filter = null;
+                if (searchText != null)
+                {
+                    filter = p => p.Name.Contains(searchText);
+                }
+
+                var products = _mapper.Map<IList<ProductResponseDto>>(_product.GetAll(filter, productOrder));
                 if (products.Count > 0)
                 {
                     return Ok(products);
@@ -121,10 +138,15 @@ namespace AhorraYa.WebApi.Controllers
 
 
                     Brand brand = _brand.GetById(productRequestDto.BrandId);
-                    MeasurementUnit unit = _measurement.GetById(productRequestDto.UnitId);
                     Category category = _category.GetById(productRequestDto.CategoryId);
 
                     var product = _mapper.Map<Product>(productRequestDto);
+                    #region Exist
+                    //Valido si el producto ya existe.
+                    //De momento me funciona, pero siento que no es la mejor opción de establecer esto acá
+                    _product.Exist(p => p.Name == product.Name &&
+                                 p.BrandId == product.BrandId);
+                    #endregion
                     _product.Save(product);
                     return Ok(product.Id);
                 }
@@ -144,9 +166,9 @@ namespace AhorraYa.WebApi.Controllers
                 {
                     return StatusCode(500, ex.Message);
                 }
-                catch (ExceptionAlreadyExist ex) //Ya existe una category con el mismo nombre.
+                catch (ExceptionAlreadyExist ex) //Ya existe una product con el mismo nombre.
                 {
-                    return StatusCode(500, ex.Message);
+                    return StatusCode(500, ex.Message.Remove(ex.Message.Length - 15) + " and brand already exist");
                 }
                 catch (Exception)
                 {
@@ -165,16 +187,21 @@ namespace AhorraYa.WebApi.Controllers
                 try
                 {
                     Brand brand = _brand.GetById(productRequestDto.BrandId);
-                    MeasurementUnit unit = _measurement.GetById(productRequestDto.UnitId);
                     Category category = _category.GetById(productRequestDto.CategoryId);
 
                     Product productBack = _product.GetById(id.Value);
 
                     productBack = _mapper.Map<Product>(productRequestDto);
                     productBack.Brand = brand;
-                    productBack.MeasurementUnit = unit;
                     productBack.Category = category;
 
+                    #region Exist
+                    //Valido si el producto ya existe.
+                    //De momento me funciona, pero siento que no es la mejor opción de establecer esto acá
+                    _product.Exist(p => p.Name == productBack.Name &&
+                                 p.BrandId == productBack.BrandId &&
+                                 p.Id != productBack.Id);
+                    #endregion
                     _product.Save(productBack);
 
                     var response = _mapper.Map<ProductResponseDto>(productBack);
@@ -235,6 +262,20 @@ namespace AhorraYa.WebApi.Controllers
             }
             return BadRequest();
         }
+
+        //public async Task ExistProductAsync(Product product)
+        //{
+        //    var products = _product.GetAll(null, null);
+        //    bool exist = products.Any(p =>
+        //    p.Name == product.Name &&
+        //    p.BrandId == product.BrandId);
+            
+        //    if (exist)
+        //    {
+        //        throw new ExceptionAlreadyExist(typeof(Product));
+        //    }
+
+        //}
 
     }
 }

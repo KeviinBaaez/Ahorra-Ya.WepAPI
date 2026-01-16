@@ -81,7 +81,18 @@ namespace AhorraYa.DataAccess
 
         public bool Exist(T entity)
         {
+
             if (_Items.ToList().Any(i => i.Equals(entity))) //Validación que no existan 2 obj iguales
+            {
+                throw new ExceptionAlreadyExist(typeof(T));
+            }
+
+            return false;
+        }
+
+        public bool Exist(Expression<Func<T, bool>> expression)
+        {
+            if (_Items.Any(expression))
             {
                 throw new ExceptionAlreadyExist(typeof(T));
             }

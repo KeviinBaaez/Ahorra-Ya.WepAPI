@@ -18,6 +18,11 @@ namespace AhorraYa.Repository.Repositories
             return _dbContext.Exist(entity);
         }
 
+        public bool Exist(Expression<Func<T, bool>> expression)
+        {
+            return _dbContext.Exist(expression);
+        }
+
         public IList<T> GetAll(Expression<Func<T, bool>>? filter = null,
             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null)
         {

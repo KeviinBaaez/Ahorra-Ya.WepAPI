@@ -1,4 +1,5 @@
 ﻿using AhorraYa.Abstractions;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
@@ -11,12 +12,12 @@ namespace AhorraYa.Entities
         {
             PriceOfShops = new HashSet<PriceOfShop>();
         }
-        public Product(string producName, int categoryId, int brandId, int unitId)
+        public Product(string producName, int categoryId, int brandId, string barCode)
         {
             SetProductName(producName);
+            SetBarCode(barCode);
             SetCategoryId(categoryId);
             SetBrandId(brandId);
-            SetUnitId(unitId);
         }
         #region Properties
         public int Id { get; set; }
@@ -31,9 +32,6 @@ namespace AhorraYa.Entities
         public int BrandId { get; private set; }
         [JsonIgnore]
 
-        [ForeignKey(nameof(MeasurementUnit))]
-        public int UnitId { get; private set; }
-
         [StringLength(13)]
         [RegularExpression(@"^\{13}$")]
         public decimal? BarCode { get; set; }
@@ -42,7 +40,6 @@ namespace AhorraYa.Entities
         #region Virtual
         public virtual Category? Category { get; set; }
         public virtual Brand? Brand { get; set; }
-        public virtual MeasurementUnit? MeasurementUnit { get; set; }
 
         [JsonIgnore]
         public virtual ICollection<PriceOfShop> PriceOfShops { get; set; }
@@ -58,6 +55,25 @@ namespace AhorraYa.Entities
             Name = productName;
         }
 
+        public void SetBarCode(string barCode)
+        {
+            if (string.IsNullOrEmpty(barCode))
+            {
+                throw new ArgumentNullException("The product barcode cannot be empty");
+            }
+            if (barCode.Length != 13)
+            {
+                throw new ArgumentNullException("The barcode must be 13 digits long)");
+            }
+            if (!barCode.All(char.IsDigit))
+            {                
+                throw new ArgumentNullException("The barcode can only contain numbers)");
+            }
+            if(decimal.TryParse(barCode, out decimal result))
+            {
+                BarCode = result;
+            }
+        }
         public void SetCategoryId(int categoryId)
         {
             if (categoryId <= 0)
@@ -75,15 +91,6 @@ namespace AhorraYa.Entities
             }
             BrandId = brandId;
         }
-
-        public void SetUnitId(int unitId)
-        {
-            if (unitId <= 0)
-            {
-                throw new ArgumentNullException("Enter a valid number (Id)");
-            }
-            UnitId = unitId;
-        }
         #endregion
 
         // override object.Equals
@@ -94,12 +101,13 @@ namespace AhorraYa.Entities
             if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(product.Name))
                 return false;
 
-            // Comparación insensible a mayúsculas/minúsculas
+            //Comparación insensible a mayúsculas/ minúsculas
             bool sameProducName = string.Equals(Name.Trim(), product.Name.Trim(), StringComparison.OrdinalIgnoreCase);
             bool sameBrandId = this.BrandId == product.BrandId;
-            bool sameMeaserumentId = this.UnitId == product.UnitId;
 
-            return sameProducName && sameBrandId && sameMeaserumentId;
+
+            return sameProducName && sameBrandId;
+
         }
 
         // override object.GetHashCode
@@ -107,7 +115,7 @@ namespace AhorraYa.Entities
         {
             return HashCode.Combine(
                 Name?.Trim().ToLowerInvariant(),
-                BrandId, UnitId);
+                BrandId);
         }
     }
 }

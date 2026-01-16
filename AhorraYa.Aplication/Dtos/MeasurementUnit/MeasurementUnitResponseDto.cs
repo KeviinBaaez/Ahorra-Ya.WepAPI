@@ -3,7 +3,7 @@
     public class MeasurementUnitResponseDto
     {
         public int Id { get; set; }
-        public string UnitOfMeasure { get; set; } = null!;
-        public string? Abbreviation { get; set; }
+        public decimal Amount { get; set; }
+        public string Abbreviation { get; set; } = null!;
     }
 }

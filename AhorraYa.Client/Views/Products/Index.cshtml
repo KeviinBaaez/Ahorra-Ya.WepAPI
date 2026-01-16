@@ -1,14 +1,13 @@
-﻿@model IEnumerable<AhorraYa.WebClient.ViewModels.Categories.CategoryListVm>
-
+﻿@model IEnumerable<AhorraYa.WebClient.ViewModels.Product.ProductListVm>
 
 <div class="card shadow rounded mt-4 mb-5">
 	<div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-		<h4 class="mb-0">Category List</h4>
-		<a class="btn btn-light text-primary fw-bold" asp-controller="Categories" asp-action="Upsert">
-			<i class="bi bi.plus-circle me-1"></i> New Category	
+		<h4 class="mb-0">Product List</h4>
+		<a class="btn btn-light text-primary fw-bold" asp-controller="Products" asp-action="Upsert">
+			<i class="bi bi.plus-circle me-1"></i> New Product
 		</a>
 	</div>
-	<form method="get" asp-action="Index" asp-controller="Categories" class="mb-4 p-3 border rounded shadow bg-light">
+	<form method="get" asp-action="Index" asp-controller="Products" class="mb-4 p-3 border rounded shadow bg-light">
 		<div class="row g-3 align-items-end">
 			<!-- Search -->
 			<div class="col-md-4 col-lg-6">
@@ -18,7 +17,7 @@
 						   class="form-control"
 						   name="searchText"
 						   value="@(ViewBag.CurrentSearchText ?? "")"
-						   placeholder="Enter category name or part of it" />
+						   placeholder="Enter product name or part of it" />
 					<button class="btn btn-primary" type="submit">
 						<i class="bi bi-search"></i>
 					</button>
@@ -29,19 +28,19 @@
 				<div class="row g-2 align-items-end">
 					<!-- Order By -->
 					<div class="col-8">
-						<label for="orderCategories" class="form-label mb-0">Order By</label>
+						<label for="orderProducts" class="form-label mb-0">Order By</label>
 						<select class="form-select"
-								id="orderCategories"
-								name="orderCategories"
+								id="orderProducts"
+								name="orderProducts"
 								onchange="this.form.submit()">
-							<option value="A-Z" selected="@(ViewBag.CurrentOrderCategories == "A-Z")">A-Z</option>
-							<option value="Z-A" selected="@(ViewBag.CurrentOrderCategories == "Z-A")">Z-A</option>
+							<option value="A-Z" selected="@(ViewBag.CurrentOrderProducts == "A-Z")">A-Z</option>
+							<option value="Z-A" selected="@(ViewBag.CurrentOrderProducts == "Z-A")">Z-A</option>
 						</select>
 					</div>
 					<!-- CLEAR -->
 					<div class="col-4 d-grid">
 						<a class="btn btn-secondary"
-						   href="@Url.Action("Index", "Categories")">
+						   href="@Url.Action("Index", "Products")">
 							<i class="bi bi-arrow-clockwise me-1"></i>
 							Clear
 						</a>
@@ -57,7 +56,7 @@
 		@if (!Model.Any())
 		{
 			<div class="alert alert-warning m-3">
-				<p>There are no registered categories</p>
+				<p>There are no registered products</p>
 			</div>
 		}
 		else
@@ -65,29 +64,33 @@
 			<table class="table table-hover mb-0">
 				<thead>
 					<tr class="row-cols-6">
-						<th class="col-10">Name</th>
+						<th class="col-4">Name</th>
+						<th class="col-3">Brand</th>
+						<th class="col-3">Category</th>
 						<th class="col-2 text-center">Actions</th>
 					</tr>
 				</thead>
 
 				<tbody>
-					@foreach (var category in Model)
+					@foreach (var product in Model)
 					{
 						<tr class="row-cols-6">
-							<td class="col-10">@category.CategoryName</td>
+							<td class="col-4 ml-2">@product.Name</td>
+							<td class="col-3">@product.BrandName</td>
+							<td class="col-3">@product.CategoryName</td>
 							<td class="col-2 text-center">
-								<a class="btn btn-sm btn-outline-warning me-1" asp-controller="Categories" asp-action="Upsert" asp-route-id="@category.Id">
+								<a class="btn btn-sm btn-outline-warning me-1" asp-controller="Products" asp-action="Upsert" asp-route-id="@product.Id">
 									<i class="bi bi-pencil-square"></i>
 									Edit
 								</a>
-								<button type="button" class="btn btn-danger" onclick="confirm(@category.Id, '@category.CategoryName', '@typeof(Category).Name')">
+								<button type="button" class="btn btn-danger" onclick="confirm(@product.Id, '@product.Name', '@typeof(Product).Name')">
 									<i class="bi bi-trash"></i>
 									Delete
 								</button>
 
-								<form id="formDelete-@category.Id" method="post" asp-action="Delete" style="display: none">
+								<form id="formDelete-@product.Id" method="post" asp-action="Delete" style="display: none">
 									@Html.AntiForgeryToken();
-									<input type="hidden" name="id" value="@category.Id" />
+									<input type="hidden" name="id" value="@product.Id" />
 								</form>
 							</td>
 						</tr>
@@ -97,3 +100,4 @@
 		}
 	</div>
 </div>
+

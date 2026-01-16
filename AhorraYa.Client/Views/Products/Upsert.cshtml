@@ -1,0 +1,56 @@
+﻿@model ProductEditVm
+
+<form method="post">
+	@Html.AntiForgeryToken()
+	<input type="hidden" asp-for="Id" />
+	<div class=" border p-3 m-4 w-75 mx-auto">
+		<div class="row pb-2">
+			<h2 class="text-primary">@(Model.Id == 0 ? "Add Product" : "Update Product")</h2>
+			<hr />
+		</div>
+		<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+		<div class=" mb-3 row p-1">
+			<label class="p-0" asp-for="Name"></label>
+			<input class="form-control" asp-for="Name" />
+			<span class="text-danger" asp-validation-for="Name"></span>
+		</div>
+		<div class="mb-3 row p-1">
+			<label class="p-0" asp-for="BarCode"></label>
+			<textarea class="form-control" asp-for="BarCode" style="width:100%; height:10"></textarea>
+			<span class="text-danger" asp-validation-for="BarCode"></span>
+		</div>
+		<div class="mb-3 row p-1">
+			<label class="p-0" asp-for="BrandId"></label>
+			<select class="form-control" asp-for="BrandId" asp-items="@Model.Brands">
+				<option selected disabled="">-- Select Brand --</option>
+			</select>
+			<span class="text-danger" asp-validation-for="BrandId"></span>
+		</div>
+		<div class="mb-3 row p-1">
+			<label class="p-0" asp-for="CategoryId"></label>
+			<select class="form-control" asp-for="CategoryId" asp-items="@Model.Categories">
+				<option selected disabled="">-- Select Category --</option>
+			</select>
+			<span class="text-danger" asp-validation-for="CategoryId"></span>
+		</div>
+		@if (Model.Id == 0)
+		{
+			<button class="btn btn-primary" type="submit">
+				<i class="bi bi-floppy2-fill"></i>
+				Save
+			</button>
+		}
+		else
+		{
+			<button class="btn btn-warning" type="submit">
+				<i class="bi bi-floppy2-fill"></i>
+				Update
+			</button>
+		}
+
+		<a class="btn btn-success" asp-controller="Products" asp-action="Index">
+			<i class="bi bi-backspace"></i>
+			Back to List
+		</a>
+	</div>
+</form>

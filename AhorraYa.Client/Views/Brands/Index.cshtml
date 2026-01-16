@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AhorraYa.WebClient.ViewModels.Brand.BrandListVm>
+﻿@model IEnumerable<AhorraYa.WebClient.ViewModels.Brands.BrandListVm>
 
 
 <div class="card shadow rounded mt-4 mb-5">
@@ -9,6 +9,50 @@
 		</a>
 	</div>
 	<form method="get" asp-action="Index" asp-controller="Brands" class="mb-4 p-3 border rounded shadow bg-light">
+		<div class="row g-3 align-items-end">
+			<!-- Search -->
+			<div class="col-md-4 col-lg-6">
+				<label class="form-label mb-0">Search Text</label>
+				<div class="input-group">
+					<input type="text"
+						   class="form-control"
+						   name="searchText"
+						   value="@(ViewBag.CurrentSearchText ?? "")"
+						   placeholder="Enter brand name or part of it" />
+					<button class="btn btn-primary" type="submit">
+						<i class="bi bi-search"></i>
+					</button>
+				</div>
+			</div>
+
+			<div class="col-lg-6 col-md-12">
+				<div class="row g-2 align-items-end">
+					<!-- Order By -->
+					<div class="col-8">
+						<label for="orderBrands" class="form-label mb-0">Order By</label>
+						<select class="form-select"
+								id="orderBrands"
+								name="orderBrands"
+								onchange="this.form.submit()">
+							<option value="A-Z" selected="@(ViewBag.CurrentOrderBrands == "A-Z")">A-Z</option>
+							<option value="Z-A" selected="@(ViewBag.CurrentOrderBrands == "Z-A")">Z-A</option>
+						</select>
+					</div>
+					<!-- CLEAR -->
+					<div class="col-4 d-grid">
+						<a class="btn btn-secondary"
+						   href="@Url.Action("Index", "Brands")">
+							<i class="bi bi-arrow-clockwise me-1"></i>
+							Clear
+						</a>
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+	</form>
+@* 	<form method="get" asp-action="Index" asp-controller="Brands" class="mb-4 p-3 border rounded shadow bg-light">
 		<div class="row g-3 align-items-end">
 			<div class="col-md-5 col-lg-4">
 				<label for="searchText" class="form-label mb-0">Search Text</label>
@@ -30,7 +74,7 @@
 				</a>
 			</div>
 		</div>
-	</form>
+	</form> *@
 
 	<div class="card-body p-0">
 		@if (!Model.Any())

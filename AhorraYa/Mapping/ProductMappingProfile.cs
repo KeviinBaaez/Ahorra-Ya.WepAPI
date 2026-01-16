@@ -11,17 +11,17 @@ namespace AhorraYa.WebApi.Mapping
             CreateMap<Product, ProductResponseDto>()
                 .ForMember(dest => dest.CategoryName, 
                 opt => opt.MapFrom(src => src.Category!.CategoryName))
+                .ForMember(dest => dest.BarCode,
+                opt => opt.MapFrom(src => src.BarCode))
                 .ForMember(dest => dest.BrandName, 
-                opt => opt.MapFrom(src => src.Brand!.BrandName))
-                .ForMember(dest => dest.UnitName,
-                opt => opt.MapFrom(src => src.MeasurementUnit!.UnitOfMeasure));
+                opt => opt.MapFrom(src => src.Brand!.BrandName));
             CreateMap<ProductRequestDto, Product>()
+                                .ForMember(dest => dest.BarCode,
+                opt => opt.MapFrom(src => src.BarCode))
                 .ForMember(dest => dest.CategoryId,
                 opt => opt.MapFrom(src => src.CategoryId))
                 .ForMember(dest => dest.BrandId,
-                opt => opt.MapFrom(src => src.BrandId))
-                .ForMember(dest => dest.UnitId,
-                opt => opt.MapFrom(src => src.UnitId));
+                opt => opt.MapFrom(src => src.BrandId));
         }
     }
 }

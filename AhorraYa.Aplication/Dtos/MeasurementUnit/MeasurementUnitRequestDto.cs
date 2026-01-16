@@ -6,9 +6,8 @@ namespace AhorraYa.Application.Dtos.MeasurementUnit
     {
         public int Id { get; set; }
 
-        [StringLength(40)]
-        public string UnitOfMeasure { get; set; } = null!;
+        public decimal Amount { get; set; } 
         [StringLength(5)]
-        public string? Abbreviation { get; set; }
+        public string Abbreviation { get; set; } = null!;
     }
 }

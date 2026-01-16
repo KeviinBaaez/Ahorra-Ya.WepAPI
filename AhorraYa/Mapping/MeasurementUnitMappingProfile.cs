@@ -10,8 +10,6 @@ namespace AhorraYa.WebApi.Mapping
         {
             CreateMap<MeasurementUnit, MeasurementUnitResponseDto>();
             CreateMap<MeasurementUnitRequestDto, MeasurementUnit>().ReverseMap();
-                //.ForMember(dest => dest.Abbreviation, opt => opt
-                //.MapFrom(src => src.Abbreviation));
         }
     }
 }

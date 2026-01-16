@@ -18,6 +18,10 @@
                 <div class="card-body">
                     <p>Actualmente, el **WebClient (MVC)** tiene operativos los siguientes catálogos con CRUD completo, búsqueda y ordenamiento:</p>
                     <div class="list-group">
+                        <a href="@Url.Action("Index", "Products")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <span><strong>Products</strong> (Productos)</span>
+                            <span class="badge bg-primary rounded-pill">Activo</span>
+                        </a>
                         <a href="@Url.Action("Index", "Brands")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                             <span><strong>Brands</strong> (Marcas)</span>
                             <span class="badge bg-primary rounded-pill">Activo</span>
@@ -52,7 +56,7 @@
                         </tbody>
                     </table>
                     <div class="alert alert-info py-2 mt-2">
-                        <small><strong>Nota:</strong> El token generado debe colocarse en el campo correspondiente dentro de los controladores <code>BrandController</code> y <code>CategoryController</code> para habilitar las peticiones autorizadas.</small>
+                        <small><strong>Nota:</strong> El token generado debe colocarse en el campo correspondiente dentro de los controladores <code>ProductsController</code>, <code>BrandsController</code> y <code>CategoriesController</code> para habilitar las peticiones autorizadas.</small>
                     </div>
                 </div>
             </div>

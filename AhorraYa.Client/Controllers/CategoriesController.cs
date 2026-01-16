@@ -1,5 +1,5 @@
 ﻿using AhorraYa.Application.Dtos.Category;
-using AhorraYa.WebClient.ViewModels.Category;
+using AhorraYa.WebClient.ViewModels.Categories;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -21,7 +21,7 @@ namespace AhorraYa.WebClient.Controllers
             _httpClient.BaseAddress = baseAddress;
             _mapper = mapper;
             //Una vez autorizado mediante la webAPI, establecer tu nuevo token aquí.
-            _jwtToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFhZGRmNzRhLWE2OGYtNDRkZS04MmViLTA4ZGU0NWFhZGY2YSIsInN1YiI6IjFhZGRmNzRhLWE2OGYtNDRkZS04MmViLTA4ZGU0NWFhZGY2YSIsIm5hbWUiOiJBZG1pbiIsImVtYWlsIjoiYWRtaW5AYWhvcnJheWEuY29tIiwicm9sZSI6IkFkbWluIiwibmJmIjoxNzY2ODgzMDA3LCJleHAiOjE3NjY4OTc0MDcsImlhdCI6MTc2Njg4MzAwN30.PkC0taXnNSyVfhHEy3pUOcyWlDQeBPrST76HLp6s3c7f_3e-OvD-PtSd6hNGX7w5z7UGh0GpYfPfSkeQtaGDJg";
+            _jwtToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjJlZDM4OTZjLWM2ZDUtNDUzYi1hMzE4LTA4ZGU1NDgwZmM5NyIsInN1YiI6IjJlZDM4OTZjLWM2ZDUtNDUzYi1hMzE4LTA4ZGU1NDgwZmM5NyIsIm5hbWUiOiJBZG1pbiIsImVtYWlsIjoiYWRtaW5AYWhvcnJheWEuY29tIiwicm9sZSI6IkFkbWluIiwibmJmIjoxNzY4NTI0MTEzLCJleHAiOjE3Njg1Mzg1MTMsImlhdCI6MTc2ODUyNDExM30.uLKewq1qRyMKA-18IfeXYOfUZu7MilKdzufguUPlZ_Ric0-wP02eXUbFEogmkYvY26LHAZf0wGg_gLXIRlck3Q";
         }
 
         [HttpGet]
