@@ -5,10 +5,13 @@ namespace AhorraYa.Entities
 {
     public class Location : IEntidad
     {
-        public Location(string address, int number)
+
+        public Location(string address, int number, int? floor , int cityId)
         {
             SetAddress(address);
             SetNumber(number);
+            Floor = floor;
+            CityId = cityId;
         }
         #region Properties
         public int Id { get; set; }
@@ -17,6 +20,11 @@ namespace AhorraYa.Entities
         public string Address { get; private set; } = null!;
         public int Number { get; private set; }
         public int? Floor { get; set; }
+        public int CityId { get; set; }
+        #endregion
+
+        #region Virtual
+        public virtual City? City { get; set; }
         #endregion
 
         #region Getters and Setters

@@ -17,6 +17,9 @@ namespace AhorraYa.DataAccess
         public virtual DbSet<MeasurementUnit> MeasurementUnits { get; set; }
         public virtual DbSet<PriceOfShop> PriceOfShops { get; set; }
         public virtual DbSet<Shop> Shops { get; set; }
+        public virtual DbSet<City> Cities { get; set; }
+        public virtual DbSet<Province> Provinces { get; set; }
+        public virtual DbSet<Country> Countries { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.LogTo(Console.WriteLine).EnableDetailedErrors();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
