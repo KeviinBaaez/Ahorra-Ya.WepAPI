@@ -8,7 +8,9 @@ namespace AhorraYa.WebApi.Mapping
     {
         public LocationMappingProfile()
         {
-            CreateMap<Location, LocationResponseDto>();
+            CreateMap<Location, LocationResponseDto>().
+                ForMember(dest => dest.CityName, 
+                opt => opt.MapFrom(src => src.City!.CityName));
             CreateMap<LocationRequestDto, Location>();
         }
     }

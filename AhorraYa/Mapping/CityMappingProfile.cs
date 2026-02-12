@@ -9,8 +9,8 @@ namespace AhorraYa.WebApi.Mapping
         public CityMappingProfile()
         {
                 CreateMap<City, CityResponseDto>()
-        .ForMember(dest => dest.ProvinceName,
-        opt => opt.MapFrom(src => src.Province!.ProvinceName)).ReverseMap();
+                .ForMember(dest => dest.ProvinceName,
+                opt => opt.MapFrom(src => src.Province!.ProvinceName)).ReverseMap();
                 CreateMap<CityRequestDto, City>();
         }
     }
