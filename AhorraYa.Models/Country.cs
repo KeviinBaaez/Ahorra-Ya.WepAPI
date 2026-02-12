@@ -18,7 +18,7 @@ namespace AhorraYa.Entities
         #region Properties 
         public int Id { get; set; }
         [StringLength(50)]
-        public string CountryName { get; set; }
+        public string CountryName { get; private set; }
         #endregion
 
         [JsonIgnore]

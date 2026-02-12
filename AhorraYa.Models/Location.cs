@@ -1,5 +1,6 @@
 ﻿using AhorraYa.Abstractions;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AhorraYa.Entities
 {
@@ -10,8 +11,8 @@ namespace AhorraYa.Entities
         {
             SetAddress(address);
             SetNumber(number);
+            SetCityId(cityId);
             Floor = floor;
-            CityId = cityId;
         }
         #region Properties
         public int Id { get; set; }
@@ -20,7 +21,8 @@ namespace AhorraYa.Entities
         public string Address { get; private set; } = null!;
         public int Number { get; private set; }
         public int? Floor { get; set; }
-        public int CityId { get; set; }
+        [ForeignKey(nameof(City))]
+        public int CityId { get; private set; }
         #endregion
 
         #region Virtual
@@ -44,6 +46,15 @@ namespace AhorraYa.Entities
                 throw new ArgumentNullException("check that the height is a valid number");
             }
             Number = number;
+        }
+
+        public void SetCityId(int cityId)
+        {
+            if (cityId <= 0)
+            {
+                throw new ArgumentNullException("Enter a valid number (Id)");
+            }
+            CityId = cityId;
         }
 
         public string GetFullAddress()

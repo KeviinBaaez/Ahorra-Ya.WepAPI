@@ -1,5 +1,6 @@
 ﻿using AhorraYa.Abstractions;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace AhorraYa.Entities
@@ -11,14 +12,18 @@ namespace AhorraYa.Entities
             Locations = new HashSet<Location>();
         }
 
-        public City(string city)
+        public City(string city, int provinceId)
         {
             SetCity(city);
+            SetProvinceId(provinceId);
         }
         #region Properties 
         public int Id { get; set; }
         [StringLength(50)]
-        public string CityName { get; set; }
+        public string CityName { get; private set; }
+
+        [ForeignKey(nameof(Province))]
+        public int ProvinceId { get; private set; }
         #endregion
 
         #region Virtual
@@ -36,6 +41,15 @@ namespace AhorraYa.Entities
                 throw new ArgumentNullException("The City name cannot be empty");
             }
             CityName = city;
+        }
+
+        public void SetProvinceId(int provinceId)
+        {
+            if (provinceId <= 0)
+            {
+                throw new ArgumentNullException("Enter a valid number (Id)");
+            }
+            ProvinceId = provinceId;
         }
         #endregion
     }

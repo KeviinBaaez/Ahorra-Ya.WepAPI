@@ -1,9 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AhorraYa.Abstractions;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace AhorraYa.Entities
 {
-    public class Province
+    public class Province : IEntidad
     {
         public Province()
         {
@@ -18,9 +21,12 @@ namespace AhorraYa.Entities
         #region Properties 
         public int Id { get; set; }
         [StringLength(50)]
-        public string ProvinceName { get; set; }
+        public string ProvinceName { get; private set; }
         [StringLength(10)]
-        public string Code { get; set; }
+        //DEBEMOS HACER MIGRACION
+        public string Code { get; private set; }
+        [ForeignKey(nameof(Country))]
+        public int CountryId { get; private set; }
         #endregion
 
         #region Virtual
