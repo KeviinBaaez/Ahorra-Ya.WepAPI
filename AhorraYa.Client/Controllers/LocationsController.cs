@@ -1,9 +1,8 @@
-﻿using AhorraYa.Application.Dtos.Brand;
-using AhorraYa.Application.Dtos.Category;
-using AhorraYa.Application.Dtos.Product;
-using AhorraYa.WebClient.ViewModels.Brands;
+﻿using AhorraYa.Application.Dtos.Category;
+using AhorraYa.Application.Dtos.Location;
 using AhorraYa.WebClient.ViewModels.Categories;
-using AhorraYa.WebClient.ViewModels.Product;
+using AhorraYa.WebClient.ViewModels.Cities;
+using AhorraYa.WebClient.ViewModels.Locations;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,14 +12,14 @@ using System.Text;
 
 namespace AhorraYa.WebClient.Controllers
 {
-    public class ProductsController : Controller
+    public class LocationsController : Controller
     {
         Uri baseAddress = new Uri("https://localhost:7284/");
         private readonly HttpClient _httpClient;
         private readonly IMapper _mapper;
         private readonly string _jwtToken;
 
-        public ProductsController(IMapper mapper)
+        public LocationsController(IMapper mapper)
         {
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = baseAddress;
@@ -30,22 +29,22 @@ namespace AhorraYa.WebClient.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(string? searchText, string? orderProducts)
+        public async Task<IActionResult> Index(string? searchText, string? orderBy)
         {
-            List<ProductListVm>? list = new List<ProductListVm>();
+            List<LocationListVm>? list = new List<LocationListVm>();
             //Paso el token de autorización.
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
             //Envió una petición al endpoint y guardo la rta completa del servidor
-            HttpResponseMessage response = await _httpClient.GetAsync($"api/Products/All?searchText={searchText}&orderBy={orderProducts}");
+            HttpResponseMessage response = await _httpClient.GetAsync($"api/Locations/All?searchText={searchText}&orderBy={orderBy}");
 
             if (response.IsSuccessStatusCode)//(200 y 299)
             {
                 string data = await response.Content.ReadAsStringAsync();
-                list = JsonConvert.DeserializeObject<List<ProductListVm>>(data);
+                list = JsonConvert.DeserializeObject<List<LocationListVm>>(data);
             }
 
             ViewBag.CurrentSearchText = searchText;
-            ViewBag.CurrentOrderProducts = orderProducts ?? "A-Z";
+            ViewBag.CurrentOrderBy = orderBy ?? "A-Z";
 
             return View(list);
         }
@@ -58,11 +57,10 @@ namespace AhorraYa.WebClient.Controllers
 
             if (id is null || id == 0)
             {
-                var model = new ProductEditVm
+                var model = new LocationEditVm
                 {
                     Id = 0,
-                    Categories = await GetCategoriesSelectListAsync(),
-                    Brands = await GetBrandsSelectListAsync()
+                    Cities = await GetCitiesSelectListAsync()
                 };
                 return View(model);
             }
@@ -71,22 +69,21 @@ namespace AhorraYa.WebClient.Controllers
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
                 int idToFetch = id.Value;
 
-                response = await _httpClient.GetAsync($"api/Products/GetById?id={idToFetch}");
+                response = await _httpClient.GetAsync($"api/Locations/GetById?id={idToFetch}");
                 if (response.IsSuccessStatusCode)
                 {
                     string data = await response.Content.ReadAsStringAsync();
-                    ProductRequestDto? productRequestDto = JsonConvert.DeserializeObject<ProductRequestDto>(data);
+                    LocationRequestDto? locationRequestDto = JsonConvert.DeserializeObject<LocationRequestDto>(data);
 
-                    if (productRequestDto is null)
+                    if (locationRequestDto is null)
                     {
-                        return NotFound($"Product With Id {id} Not Found!!");
+                        return NotFound($"Location With Id {id} Not Found!!");
                     }
-                    ProductEditVm productEditVm = _mapper.Map<ProductEditVm>(productRequestDto);
-                    productEditVm.Categories = await GetCategoriesSelectListAsync();
-                    productEditVm.Brands = await GetBrandsSelectListAsync();
-                    return View(productEditVm);
+                    LocationEditVm locationEditVm = _mapper.Map<LocationEditVm>(locationRequestDto);
+                    locationEditVm.Cities = await GetCitiesSelectListAsync();
+                    return View(locationEditVm);
                 }
-                return NotFound($"Product With Id {id} Not Found. API status: {response.StatusCode}");
+                return NotFound($"Location With Id {id} Not Found. API status: {response.StatusCode}");
             }
             catch (Exception)
             {
@@ -97,30 +94,30 @@ namespace AhorraYa.WebClient.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Upsert(ProductEditVm productEditVm)
+        public async Task<IActionResult> Upsert(LocationEditVm locationEditVm)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                ProductRequestDto productRequestDto = _mapper.Map<ProductRequestDto>(productEditVm);
+                LocationRequestDto locationRequestDto = _mapper.Map<LocationRequestDto>(locationEditVm);
                 try
                 {
                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
-                    var jsonContent = JsonConvert.SerializeObject(productRequestDto);
+                    var jsonContent = JsonConvert.SerializeObject(locationRequestDto);
                     var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
                     HttpResponseMessage response;
                     string successMessage;
 
-                    if(productRequestDto.Id == 0)
+                    if (locationRequestDto.Id == 0)
                     {
-                        response = await _httpClient.PostAsync($"api/Products/Create", content);
-                        successMessage = "Successfully created Product";
+                        response = await _httpClient.PostAsync($"api/Locations/Create", content);
+                        successMessage = "Successfully created Location";
                     }
                     else
                     {
-                        string url = $"api/Products/Update?id={productRequestDto.Id}";
-                        response = await _httpClient.PutAsync(url , content);
-                        successMessage = "Successfully update Product";
+                        string url = $"api/Locations/Update?id={locationRequestDto.Id}";
+                        response = await _httpClient.PutAsync(url, content);
+                        successMessage = "Successfully update location";
                     }
 
                     if (response.IsSuccessStatusCode)
@@ -132,8 +129,8 @@ namespace AhorraYa.WebClient.Controllers
                     {
                         string errorData = await response.Content.ReadAsStringAsync();
                         ModelState.AddModelError("", $"Error {errorData}");
-                        productEditVm.Brands = await GetBrandsSelectListAsync();
-                        productEditVm.Categories = await GetCategoriesSelectListAsync();
+                        locationEditVm.Cities = await GetCitiesSelectListAsync();
+
                     }
                 }
                 catch (Exception ex)
@@ -142,39 +139,14 @@ namespace AhorraYa.WebClient.Controllers
                     throw;
                 }
             }
-            return View(productEditVm);
+            return View(locationEditVm);
         }
 
-        private async Task<IEnumerable<SelectListItem>> GetBrandsSelectListAsync()
+        private async Task<IEnumerable<SelectListItem>> GetCitiesSelectListAsync()
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _jwtToken);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
 
-            var response = await _httpClient.GetAsync("api/Brands/All");
-
-            if (!response.IsSuccessStatusCode)
-                return Enumerable.Empty<SelectListItem>();
-
-            var json = await response.Content.ReadAsStringAsync();
-
-            var brands = JsonConvert.DeserializeObject<List<BrandListVm>>(json);
-
-            if (brands == null || !brands.Any())
-                return Enumerable.Empty<SelectListItem>();
-
-            return brands.Select(b => new SelectListItem
-            {
-                Value = b.Id.ToString(),
-                Text = b.BrandName
-            });
-        }
-
-        private async Task<IEnumerable<SelectListItem>> GetCategoriesSelectListAsync()
-        {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _jwtToken);
-
-            var response = await _httpClient.GetAsync($"api/Categories/All");
+            var response = await _httpClient.GetAsync("api/Cities/All");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -182,16 +154,17 @@ namespace AhorraYa.WebClient.Controllers
             }
             var json = await response.Content.ReadAsStringAsync();
 
-            var categories = JsonConvert.DeserializeObject<List<CategoryListVm>>(json);
+            var cities = JsonConvert.DeserializeObject<List<CityListVm>>(json);
 
-            if (categories == null || !categories.Any())
+            if (cities is null || !cities.Any())
             {
                 return Enumerable.Empty<SelectListItem>();
             }
-            return categories.Select(c => new SelectListItem
+
+            return cities.Select(c => new SelectListItem
             {
                 Value = c.Id.ToString(),
-                Text = c.CategoryName
+                Text = c.CityName
             });
         }
 
@@ -207,28 +180,28 @@ namespace AhorraYa.WebClient.Controllers
                 int idToFetch = id.Value;
                 HttpResponseMessage response;
 
-                response = await _httpClient.GetAsync($"api/Products/GetById?id={idToFetch}");
+                response = await _httpClient.GetAsync($"api/Locations/GetById?id={idToFetch}");
                 if (response.IsSuccessStatusCode)
                 {
                     string data = await response.Content.ReadAsStringAsync();
-                    ProductRequestDto? productDto = JsonConvert.DeserializeObject<ProductRequestDto>(data);
+                    LocationRequestDto? locationDto = JsonConvert.DeserializeObject<LocationRequestDto>(data);
 
-                    if (productDto is null)
+                    if (locationDto is null)
                     {
                         return NotFound($"Category With Id {id} Not Found!!");
                     }
 
-                    ProductEditVm productEditVm = _mapper.Map<ProductEditVm>(productDto);
-                    return View(productEditVm);
+                    LocationEditVm locationEditVm = _mapper.Map<LocationEditVm>(locationDto);
+                    return View(locationEditVm);
                 }
                 else
                 {
-                    return NotFound($"Product With Id {id} Not Found. API status: {response.StatusCode}");
+                    return NotFound($"Location With Id {id} Not Found. API status: {response.StatusCode}");
                 }
             }
             catch (Exception)
             {
-                TempData["error"] = "Error while trying to get a product";
+                TempData["error"] = "Error while trying to get a location";
                 return RedirectToAction("Index");
             }
         }
@@ -248,10 +221,10 @@ namespace AhorraYa.WebClient.Controllers
                 int idToDelete = id.Value;
 
 
-                HttpResponseMessage response = await _httpClient.DeleteAsync($"api/Products/Remove?id={idToDelete}");
+                HttpResponseMessage response = await _httpClient.DeleteAsync($"api/Locations/Remove?id={idToDelete}");
                 if (response.IsSuccessStatusCode)
                 {
-                    TempData["success"] = "Product deleted correctly";
+                    TempData["success"] = "Location deleted correctly";
                     return RedirectToAction("Index");
                 }
                 else

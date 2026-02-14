@@ -1,0 +1,54 @@
+﻿@model LocationEditVm
+
+<form method="post">
+	@Html.AntiForgeryToken()
+	<input type="hidden" asp-for="Id" />
+	<div class=" border p-3 m-4 w-75 mx-auto">
+		<div class="row pb-2">
+			<h2 class="text-primary">@(Model.Id == 0 ? "Add Location" : "Update Location")</h2>
+			<hr />
+		</div>
+		<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+		<div class=" mb-3 row p-1">
+			<label class="p-0" asp-for="Address"></label>
+			<input class="form-control" asp-for="Address" />
+			<span class="text-danger" asp-validation-for="Address"></span>
+		</div>
+		<div class="mb-3 row p-1">
+			<label class="p-0" asp-for="Number"></label>
+			<textarea class="form-control" asp-for="Number" style="width:100%; height:10"></textarea>
+			<span class="text-danger" asp-validation-for="Number"></span>
+		</div>
+		<div class="mb-3 row p-1">
+			<label class="p-0" asp-for="Floor"></label>
+			<textarea class="form-control" asp-for="Floor" style="width:100%; height:10"></textarea>
+			<span class="text-danger" asp-validation-for="Floor"></span>
+		</div>
+		<div class="mb-3 row p-1">
+			<label class="p-0" asp-for="CityId"></label>
+			<select class="form-control" asp-for="CityId" asp-items="@Model.Cities">
+				<option selected disabled="">-- Select City --</option>
+			</select>
+			<span class="text-danger" asp-validation-for="CityId"></span>
+		</div>
+		@if (Model.Id == 0)
+		{
+			<button class="btn btn-primary" type="submit">
+				<i class="bi bi-floppy2-fill"></i>
+				Save
+			</button>
+		}
+		else
+		{
+			<button class="btn btn-warning" type="submit">
+				<i class="bi bi-floppy2-fill"></i>
+				Update
+			</button>
+		}
+
+		<a class="btn btn-success" asp-controller="Locations" asp-action="Index">
+			<i class="bi bi-backspace"></i>
+			Back to List
+		</a>
+	</div>
+</form>

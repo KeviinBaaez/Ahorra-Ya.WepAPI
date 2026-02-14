@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -16,6 +16,10 @@
     <ProjectReference Include="..\AhorraYa.Aplication\AhorraYa.Application.csproj" />
     <ProjectReference Include="..\AhorraYa.DataAcces\AhorraYa.DataAccess.csproj" />
     <ProjectReference Include="..\AhorraYa.Models\AhorraYa.Entities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 
 </Project>
