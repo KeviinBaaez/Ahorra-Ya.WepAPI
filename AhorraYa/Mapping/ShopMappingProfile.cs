@@ -9,8 +9,10 @@ namespace AhorraYa.WebApi.Mapping
         public ShopMappingProfile()
         {
             CreateMap<Shop, ShopResponseDto>()
-                .ForMember(dest => dest.LocationAddress, 
-                opt => opt.MapFrom(src => src.Location!.GetFullAddress()));
+                .ForMember(dest => dest.Address, 
+                opt => opt.MapFrom(src => src.Location!.GetFullAddress()))
+                .ForMember(dest => dest.City,
+                opt => opt.MapFrom(src => src.Location!.City!.CityName));
             CreateMap<ShopRequestDto, Shop>();
         }
     }

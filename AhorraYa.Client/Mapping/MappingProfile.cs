@@ -2,10 +2,12 @@
 using AhorraYa.Application.Dtos.Category;
 using AhorraYa.Application.Dtos.Location;
 using AhorraYa.Application.Dtos.Product;
+using AhorraYa.Application.Dtos.Shop;
 using AhorraYa.WebClient.ViewModels.Brands;
 using AhorraYa.WebClient.ViewModels.Categories;
 using AhorraYa.WebClient.ViewModels.Locations;
 using AhorraYa.WebClient.ViewModels.Product;
+using AhorraYa.WebClient.ViewModels.Shops;
 using AutoMapper;
 
 namespace AhorraYa.WebClient.Mapping
@@ -18,6 +20,13 @@ namespace AhorraYa.WebClient.Mapping
             LoadBrandMapping();
             LoadProductMapping();
             LoadLocationMapping();
+            LoadShopMapping();
+        }
+
+        private void LoadShopMapping()
+        {
+            CreateMap<ShopRequestDto, ShopEditVm>().ReverseMap();
+            CreateMap<ShopResponseDto, ShopListVm>().ReverseMap();
         }
 
         private void LoadLocationMapping()

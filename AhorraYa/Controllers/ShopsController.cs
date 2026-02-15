@@ -7,6 +7,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 
 namespace AhorraYa.WebApi.Controllers
 {
@@ -33,11 +34,27 @@ namespace AhorraYa.WebApi.Controllers
 
         [HttpGet("All")]
         [Authorize(Roles = "Admin, ViewerPlus, Viewer")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(string? searchText, string? orderBy = "A-Z")
         {
             try
             {
-                var shops = _mapper.Map<IList<ShopResponseDto>>(_shop.GetAll());
+                Func<IQueryable<Shop>, IOrderedQueryable<Shop>>? shopOrder = null;
+                if (orderBy == "A-Z")
+                {
+                    shopOrder = s => s.OrderBy(s => s.ShopName);
+                }
+                else
+                {
+                    shopOrder = s => s.OrderByDescending(s => s.ShopName);
+                }
+
+                Expression<Func<Shop, bool>>? filter = null;
+                if(searchText is not null)
+                {
+                    filter = s => s.ShopName.Contains(searchText);
+                }
+
+                    var shops = _mapper.Map<IList<ShopResponseDto>>(_shop.GetAll(filter, shopOrder));
                 if (shops.Count > 0)
                 {
                     return Ok(shops);
