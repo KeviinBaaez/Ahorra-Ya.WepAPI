@@ -1,0 +1,104 @@
+﻿@model IEnumerable<AhorraYa.WebClient.ViewModels.Cities.CityListVm>
+
+<div class="card shadow rounded mt-4 mb-5">
+	<div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+		<h4 class="mb-0">City List</h4>
+		<a class="btn btn-light text-primary fw-bold" asp-controller="Cities" asp-action="Upsert">
+			<i class="bi bi.plus-circle me-1"></i> New City
+		</a>
+	</div>
+	<form method="get" asp-action="Index" asp-controller="Cities" class="mb-4 p-3 border rounded shadow bg-light">
+		<div class="row g-3 align-items-end">
+			<!-- Search -->
+			<div class="col-md-4 col-lg-6">
+				<label class="form-label mb-0">Search Text</label>
+				<div class="input-group">
+					<input type="text"
+						   class="form-control"
+						   name="searchText"
+						   value="@(ViewBag.CurrentSearchText ?? "")"
+						   placeholder="Enter city name or part of it" />
+					<button class="btn btn-primary" type="submit">
+						<i class="bi bi-search"></i>
+					</button>
+				</div>
+			</div>
+
+			<div class="col-lg-6 col-md-12">
+				<div class="row g-2 align-items-end">
+					<!-- Order By -->
+					<div class="col-8">
+						<label for="orderCity" class="form-label mb-0">Order By</label>
+						<select class="form-select"
+								id="orderCities"
+								name="orderCities"
+								onchange="this.form.submit()">
+							<option value="A-Z" selected="@(ViewBag.CurrentOrderCities == "A-Z")">A-Z</option>
+							<option value="Z-A" selected="@(ViewBag.CurrentOrderCities == "Z-A")">Z-A</option>
+						</select>
+					</div>
+					<!-- CLEAR -->
+					<div class="col-4 d-grid">
+						<a class="btn btn-secondary"
+						   href="@Url.Action("Index", "Cities")">
+							<i class="bi bi-arrow-clockwise me-1"></i>
+							Clear
+						</a>
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+	</form>
+
+	<div class="card-body p-0">
+		@if (!Model.Any())
+		{
+			<div class="alert alert-warning m-3">
+				<p>There are no registered city</p>
+			</div>
+		}
+		else
+		{
+			<table class="table table-hover mb-0">
+				<thead>
+					<tr class="row-cols-6">
+						<th class="col-4">City</th>
+						<th class="col-3">Province</th>
+						<th class="col-3">Country</th>
+						<th class="col-2 text-center">Actions</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					@foreach (var city in Model)
+					{
+						<tr class="row-cols-6">
+							<td class="col-4 ml-2">@city.CityName</td>
+							<td class="col-3">@city.ProvinceName</td>
+							<td class="col-3">@city.CountryName</td>
+							<td class="col-2 text-center">
+								<a class="btn btn-sm btn-outline-warning me-1" asp-controller="Cities" asp-action="Upsert" asp-route-id="@city.Id">
+									<i class="bi bi-pencil-square"></i>
+									Edit
+								</a>
+								<button type="button" class="btn btn-danger" onclick="confirm(@city.Id, '@city.CityName', '@typeof(City).Name')">
+									<i class="bi bi-trash"></i>
+									Delete
+								</button>
+
+								<form id="formDelete-@city.Id" method="post" asp-action="Delete" style="display: none">
+									@Html.AntiForgeryToken();
+									<input type="hidden" name="id" value="@city.Id" />
+								</form>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
+	</div>
+</div>
+
+

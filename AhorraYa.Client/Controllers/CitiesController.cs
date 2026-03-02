@@ -1,8 +1,7 @@
-﻿using AhorraYa.Application.Dtos.Category;
-using AhorraYa.Application.Dtos.Location;
-using AhorraYa.WebClient.ViewModels.Categories;
+﻿using AhorraYa.Application.Dtos.City;
 using AhorraYa.WebClient.ViewModels.Cities;
-using AhorraYa.WebClient.ViewModels.Locations;
+using AhorraYa.WebClient.ViewModels.Countries;
+using AhorraYa.WebClient.ViewModels.Provinces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -12,14 +11,14 @@ using System.Text;
 
 namespace AhorraYa.WebClient.Controllers
 {
-    public class LocationsController : Controller
+    public class CitiesController : Controller
     {
         Uri baseAddress = new Uri("https://localhost:7284/");
         private readonly HttpClient _httpClient;
         private readonly IMapper _mapper;
         private readonly string _jwtToken;
 
-        public LocationsController(IMapper mapper)
+        public CitiesController(IMapper mapper)
         {
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = baseAddress;
@@ -29,22 +28,22 @@ namespace AhorraYa.WebClient.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(string? searchText, string? orderBy)
+        public async Task<IActionResult> Index(string? searchText, string? orderCities)
         {
-            List<LocationListVm>? list = new List<LocationListVm>();
+            List<CityListVm>? list = new List<CityListVm>();
             //Paso el token de autorización.
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
             //Envió una petición al endpoint y guardo la rta completa del servidor
-            HttpResponseMessage response = await _httpClient.GetAsync($"api/Locations/All?searchText={searchText}&orderBy={orderBy}");
+            HttpResponseMessage response = await _httpClient.GetAsync($"api/Cities/All?searchText={searchText}&orderBy={orderCities}");
 
             if (response.IsSuccessStatusCode)//(200 y 299)
             {
                 string data = await response.Content.ReadAsStringAsync();
-                list = JsonConvert.DeserializeObject<List<LocationListVm>>(data);
+                list = JsonConvert.DeserializeObject<List<CityListVm>>(data);
             }
 
             ViewBag.CurrentSearchText = searchText;
-            ViewBag.CurrentOrderBy = orderBy ?? "A-Z";
+            ViewBag.CurrentOrderCities = orderCities ?? "A-Z";
 
             return View(list);
         }
@@ -57,10 +56,10 @@ namespace AhorraYa.WebClient.Controllers
 
             if (id is null || id == 0)
             {
-                var model = new LocationEditVm
+                var model = new CityEditVm
                 {
                     Id = 0,
-                    Cities = await GetCitiesSelectListAsync()
+                    Provinces = await GetProvincesSelectListAsync()
                 };
                 return View(model);
             }
@@ -69,21 +68,21 @@ namespace AhorraYa.WebClient.Controllers
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
                 int idToFetch = id.Value;
 
-                response = await _httpClient.GetAsync($"api/Locations/GetById?id={idToFetch}");
+                response = await _httpClient.GetAsync($"api/Cities/GetById?id={idToFetch}");
                 if (response.IsSuccessStatusCode)
                 {
                     string data = await response.Content.ReadAsStringAsync();
-                    LocationRequestDto? locationRequestDto = JsonConvert.DeserializeObject<LocationRequestDto>(data);
+                    CityRequestDto? cityRequestDto = JsonConvert.DeserializeObject<CityRequestDto>(data);
 
-                    if (locationRequestDto is null)
+                    if (cityRequestDto is null)
                     {
-                        return NotFound($"Location With Id {id} Not Found!!");
+                        return NotFound($"City With Id {id} Not Found!!");
                     }
-                    LocationEditVm locationEditVm = _mapper.Map<LocationEditVm>(locationRequestDto);
-                    locationEditVm.Cities = await GetCitiesSelectListAsync();
-                    return View(locationEditVm);
+                    CityEditVm cityEditVm = _mapper.Map<CityEditVm>(cityRequestDto);
+                    cityEditVm.Provinces = await GetProvincesSelectListAsync();
+                    return View(cityEditVm);
                 }
-                return NotFound($"Location With Id {id} Not Found. API status: {response.StatusCode}");
+                return NotFound($"City With Id {id} Not Found. API status: {response.StatusCode}");
             }
             catch (Exception)
             {
@@ -94,30 +93,30 @@ namespace AhorraYa.WebClient.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Upsert(LocationEditVm locationEditVm)
+        public async Task<IActionResult> Upsert(CityEditVm cityEditVm)
         {
             if (ModelState.IsValid)
             {
-                LocationRequestDto locationRequestDto = _mapper.Map<LocationRequestDto>(locationEditVm);
+                CityRequestDto cityRequestDto = _mapper.Map<CityRequestDto>(cityEditVm);
                 try
                 {
                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
-                    var jsonContent = JsonConvert.SerializeObject(locationRequestDto);
+                    var jsonContent = JsonConvert.SerializeObject(cityRequestDto);
                     var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
                     HttpResponseMessage response;
                     string successMessage;
 
-                    if (locationRequestDto.Id == 0)
+                    if (cityRequestDto.Id == 0)
                     {
-                        response = await _httpClient.PostAsync($"api/Locations/Create", content);
-                        successMessage = "Successfully created Location";
+                        response = await _httpClient.PostAsync($"api/Cities/Create", content);
+                        successMessage = "Successfully created City";
                     }
                     else
                     {
-                        string url = $"api/Locations/Update?id={locationRequestDto.Id}";
+                        string url = $"api/Cities/Update?id={cityRequestDto.Id}";
                         response = await _httpClient.PutAsync(url, content);
-                        successMessage = "Successfully update location";
+                        successMessage = "Successfully update City";
                     }
 
                     if (response.IsSuccessStatusCode)
@@ -129,8 +128,7 @@ namespace AhorraYa.WebClient.Controllers
                     {
                         string errorData = await response.Content.ReadAsStringAsync();
                         ModelState.AddModelError("", $"Error {errorData}");
-                        locationEditVm.Cities = await GetCitiesSelectListAsync();
-
+                        cityEditVm.Provinces = await GetProvincesSelectListAsync();
                     }
                 }
                 catch (Exception ex)
@@ -139,14 +137,39 @@ namespace AhorraYa.WebClient.Controllers
                     throw;
                 }
             }
-            return View(locationEditVm);
+            return View(cityEditVm);
         }
 
-        private async Task<IEnumerable<SelectListItem>> GetCitiesSelectListAsync()
+        private async Task<IEnumerable<SelectListItem>> GetProvincesSelectListAsync()
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _jwtToken);
 
-            var response = await _httpClient.GetAsync("api/Cities/All");
+            var response = await _httpClient.GetAsync("api/Provinces/All");
+
+            if (!response.IsSuccessStatusCode)
+                return Enumerable.Empty<SelectListItem>();
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            var provinces = JsonConvert.DeserializeObject<List<ProvinceListVm>>(json);
+
+            if (provinces == null || !provinces.Any())
+                return Enumerable.Empty<SelectListItem>();
+
+            return provinces.Select(b => new SelectListItem
+            {
+                Value = b.Id.ToString(),
+                Text = b.ProvinceName
+            });
+        }
+
+        private async Task<IEnumerable<SelectListItem>> GetCountriesSelectListAsync()
+        {
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _jwtToken);
+
+            var response = await _httpClient.GetAsync($"api/Countries/All");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -154,17 +177,16 @@ namespace AhorraYa.WebClient.Controllers
             }
             var json = await response.Content.ReadAsStringAsync();
 
-            var cities = JsonConvert.DeserializeObject<List<CityListVm>>(json);
+            var countries = JsonConvert.DeserializeObject<List<CountryListVm>>(json);
 
-            if (cities is null || !cities.Any())
+            if (countries == null || !countries.Any())
             {
                 return Enumerable.Empty<SelectListItem>();
             }
-
-            return cities.Select(c => new SelectListItem
+            return countries.Select(c => new SelectListItem
             {
                 Value = c.Id.ToString(),
-                Text = c.CityName
+                Text = c.CountryName
             });
         }
 
@@ -180,28 +202,28 @@ namespace AhorraYa.WebClient.Controllers
                 int idToFetch = id.Value;
                 HttpResponseMessage response;
 
-                response = await _httpClient.GetAsync($"api/Locations/GetById?id={idToFetch}");
+                response = await _httpClient.GetAsync($"api/Cities/GetById?id={idToFetch}");
                 if (response.IsSuccessStatusCode)
                 {
                     string data = await response.Content.ReadAsStringAsync();
-                    LocationRequestDto? locationDto = JsonConvert.DeserializeObject<LocationRequestDto>(data);
+                    CityRequestDto? cityDto = JsonConvert.DeserializeObject<CityRequestDto>(data);
 
-                    if (locationDto is null)
+                    if (cityDto is null)
                     {
-                        return NotFound($"Category With Id {id} Not Found!!");
+                        return NotFound($"City With Id {id} Not Found!!");
                     }
 
-                    LocationEditVm locationEditVm = _mapper.Map<LocationEditVm>(locationDto);
-                    return View(locationEditVm);
+                    CityEditVm cityEditVm = _mapper.Map<CityEditVm>(cityDto);
+                    return View(cityEditVm);
                 }
                 else
                 {
-                    return NotFound($"Location With Id {id} Not Found. API status: {response.StatusCode}");
+                    return NotFound($"City With Id {id} Not Found. API status: {response.StatusCode}");
                 }
             }
             catch (Exception)
             {
-                TempData["error"] = "Error while trying to get a location";
+                TempData["error"] = "Error while trying to get a city";
                 return RedirectToAction("Index");
             }
         }
@@ -221,10 +243,10 @@ namespace AhorraYa.WebClient.Controllers
                 int idToDelete = id.Value;
 
 
-                HttpResponseMessage response = await _httpClient.DeleteAsync($"api/Locations/Remove?id={idToDelete}");
+                HttpResponseMessage response = await _httpClient.DeleteAsync($"api/Cities/Remove?id={idToDelete}");
                 if (response.IsSuccessStatusCode)
                 {
-                    TempData["success"] = "Location deleted correctly";
+                    TempData["success"] = "City deleted correctly";
                     return RedirectToAction("Index");
                 }
                 else

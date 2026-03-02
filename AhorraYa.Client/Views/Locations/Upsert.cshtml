@@ -26,11 +26,20 @@
 		</div>
 		<div class="mb-3 row p-1">
 			<label class="p-0" asp-for="CityId"></label>
-			<select class="form-control" asp-for="CityId" asp-items="@Model.Cities">
-				<option selected disabled="">-- Select City --</option>
-			</select>
-			<span class="text-danger" asp-validation-for="CityId"></span>
+			<div class="col-10 p-0">
+				<select class="form-control" asp-for="CityId" asp-items="@Model.Cities">
+					<option selected disabled="">-- Select City --</option>
+				</select>
+				<span class="text-danger" asp-validation-for="CityId"></span>
+			</div>
+			<div class="col-2">
+				<a class="btn btn-light text-primary fw-bold" asp-controller="Cities" asp-action="Upsert">
+					<i class="bi bi.plus-circle me-1"></i> New City
+				</a>
+			</div>
 		</div>
+
+
 		@if (Model.Id == 0)
 		{
 			<button class="btn btn-primary" type="submit">

@@ -1,0 +1,50 @@
+﻿@model ProvinceEditVm
+
+<form method="post">
+	@Html.AntiForgeryToken()
+	<input type="hidden" asp-for="Id" />
+	<div class=" border p-3 m-4 w-75 mx-auto">
+		<div class="row pb-2">
+			<h2 class="text-primary">@(Model.Id == 0 ? "Add Province" : "Update Province")</h2>
+			<hr />
+		</div>
+		<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+		<div class=" mb-3 row p-1">
+			<label class="p-0" asp-for="ProvinceName"></label>
+			<input class="form-control" asp-for="ProvinceName" />
+			<span class="text-danger" asp-validation-for="ProvinceName"></span>
+		</div>
+		<div class="mb-3 row p-1">
+			<label class="p-0" asp-for="Code"></label>
+			<textarea class="form-control" asp-for="Code" style="width:100%; height:10"></textarea>
+			<span class="text-danger" asp-validation-for="Code"></span>
+		</div>
+		<div class="mb-3 row p-1">
+			<label class="p-0" asp-for="CountryId"></label>
+			<select class="form-control" asp-for="CountryId" asp-items="@Model.Countries">
+				<option selected disabled="">-- Select Country --</option>
+			</select>
+			<span class="text-danger" asp-validation-for="CountryId"></span>
+		</div>
+		@if (Model.Id == 0)
+		{
+			<button class="btn btn-primary" type="submit">
+				<i class="bi bi-floppy2-fill"></i>
+				Save
+			</button>
+		}
+		else
+		{
+			<button class="btn btn-warning" type="submit">
+				<i class="bi bi-floppy2-fill"></i>
+				Update
+			</button>
+		}
+
+		<a class="btn btn-success" asp-controller="Provinces" asp-action="Index">
+			<i class="bi bi-backspace"></i>
+			Back to List
+		</a>
+	</div>
+</form>
+

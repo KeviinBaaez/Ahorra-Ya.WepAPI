@@ -1,25 +1,21 @@
-﻿using AhorraYa.Application.Dtos.Category;
-using AhorraYa.Application.Dtos.Location;
-using AhorraYa.WebClient.ViewModels.Categories;
-using AhorraYa.WebClient.ViewModels.Cities;
-using AhorraYa.WebClient.ViewModels.Locations;
+﻿using AhorraYa.Application.Dtos.Country;
+using AhorraYa.WebClient.ViewModels.Countries;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
 
 namespace AhorraYa.WebClient.Controllers
 {
-    public class LocationsController : Controller
+    public class CountriesController : Controller
     {
         Uri baseAddress = new Uri("https://localhost:7284/");
         private readonly HttpClient _httpClient;
         private readonly IMapper _mapper;
         private readonly string _jwtToken;
 
-        public LocationsController(IMapper mapper)
+        public CountriesController(IMapper mapper)
         {
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = baseAddress;
@@ -29,38 +25,31 @@ namespace AhorraYa.WebClient.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(string? searchText, string? orderBy)
+        public async Task<IActionResult> Index(string? searchText, string? orderCountries)
         {
-            List<LocationListVm>? list = new List<LocationListVm>();
-            //Paso el token de autorización.
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
-            //Envió una petición al endpoint y guardo la rta completa del servidor
-            HttpResponseMessage response = await _httpClient.GetAsync($"api/Locations/All?searchText={searchText}&orderBy={orderBy}");
+            List<CountryListVm> list = new List<CountryListVm>();
 
-            if (response.IsSuccessStatusCode)//(200 y 299)
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+            HttpResponseMessage response = await _httpClient.GetAsync($"api/Countries/All?searchText={searchText}&orderBy={orderCountries}");
+
+            if (response.IsSuccessStatusCode)
             {
                 string data = await response.Content.ReadAsStringAsync();
-                list = JsonConvert.DeserializeObject<List<LocationListVm>>(data);
+                list = JsonConvert.DeserializeObject<List<CountryListVm>>(data);
             }
-
             ViewBag.CurrentSearchText = searchText;
-            ViewBag.CurrentOrderBy = orderBy ?? "A-Z";
+            ViewBag.CurrentOrderCountries = orderCountries ?? "A-Z";
 
             return View(list);
         }
 
         public async Task<IActionResult> Upsert(int? id)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
-
-            HttpResponseMessage response;
-
             if (id is null || id == 0)
             {
-                var model = new LocationEditVm
+                var model = new CountryEditVm()
                 {
-                    Id = 0,
-                    Cities = await GetCitiesSelectListAsync()
+                    Id = 0
                 };
                 return View(model);
             }
@@ -68,56 +57,54 @@ namespace AhorraYa.WebClient.Controllers
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
                 int idToFetch = id.Value;
-
-                response = await _httpClient.GetAsync($"api/Locations/GetById?id={idToFetch}");
+                HttpResponseMessage response = await _httpClient.GetAsync($"api/Countries/GetById?id={idToFetch}");
                 if (response.IsSuccessStatusCode)
                 {
                     string data = await response.Content.ReadAsStringAsync();
-                    LocationRequestDto? locationRequestDto = JsonConvert.DeserializeObject<LocationRequestDto>(data);
+                    CountryRequestDto? countryDto = JsonConvert.DeserializeObject<CountryRequestDto>(data);
 
-                    if (locationRequestDto is null)
+                    if (countryDto is null)
                     {
-                        return NotFound($"Location With Id {id} Not Found!!");
+                        return NotFound($"Country With Id {id} Not Found!!");
                     }
-                    LocationEditVm locationEditVm = _mapper.Map<LocationEditVm>(locationRequestDto);
-                    locationEditVm.Cities = await GetCitiesSelectListAsync();
-                    return View(locationEditVm);
+
+                    CountryEditVm countryVm = _mapper.Map<CountryEditVm>(countryDto);
+                    return View(countryVm);
                 }
-                return NotFound($"Location With Id {id} Not Found. API status: {response.StatusCode}");
+
+                return NotFound($"Country With Id {id} Not Found. API status: {response.StatusCode}");
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Upsert(LocationEditVm locationEditVm)
+        public async Task<IActionResult> Upsert(CountryEditVm countryVm)
         {
             if (ModelState.IsValid)
             {
-                LocationRequestDto locationRequestDto = _mapper.Map<LocationRequestDto>(locationEditVm);
+                CountryRequestDto countryRequest = _mapper.Map<CountryRequestDto>(countryVm);
                 try
                 {
                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
-                    var jsonContent = JsonConvert.SerializeObject(locationRequestDto);
+                    string jsonContent = JsonConvert.SerializeObject(countryRequest);
                     var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
                     HttpResponseMessage response;
                     string successMessage;
-
-                    if (locationRequestDto.Id == 0)
+                    if (countryRequest.Id == 0)
                     {
-                        response = await _httpClient.PostAsync($"api/Locations/Create", content);
-                        successMessage = "Successfully created Location";
+                        response = await _httpClient.PostAsync("api/Countries/Create", content);
+                        successMessage = "successfully created country";
                     }
                     else
                     {
-                        string url = $"api/Locations/Update?id={locationRequestDto.Id}";
+                        string url = $"api/Countries/Update?id={countryRequest.Id}";
                         response = await _httpClient.PutAsync(url, content);
-                        successMessage = "Successfully update location";
+                        successMessage = "successfully update country";
                     }
 
                     if (response.IsSuccessStatusCode)
@@ -128,44 +115,16 @@ namespace AhorraYa.WebClient.Controllers
                     else
                     {
                         string errorData = await response.Content.ReadAsStringAsync();
-                        ModelState.AddModelError("", $"Error {errorData}");
-                        locationEditVm.Cities = await GetCitiesSelectListAsync();
 
+                        ModelState.AddModelError("", $"Error {response.StatusCode}");
                     }
                 }
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("", $"Error {ex.Message}");
-                    throw;
                 }
             }
-            return View(locationEditVm);
-        }
-
-        private async Task<IEnumerable<SelectListItem>> GetCitiesSelectListAsync()
-        {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
-
-            var response = await _httpClient.GetAsync("api/Cities/All");
-
-            if (!response.IsSuccessStatusCode)
-            {
-                return Enumerable.Empty<SelectListItem>();
-            }
-            var json = await response.Content.ReadAsStringAsync();
-
-            var cities = JsonConvert.DeserializeObject<List<CityListVm>>(json);
-
-            if (cities is null || !cities.Any())
-            {
-                return Enumerable.Empty<SelectListItem>();
-            }
-
-            return cities.Select(c => new SelectListItem
-            {
-                Value = c.Id.ToString(),
-                Text = c.CityName
-            });
+            return View(countryVm);
         }
 
         public async Task<IActionResult> Delete(int? id)
@@ -180,28 +139,28 @@ namespace AhorraYa.WebClient.Controllers
                 int idToFetch = id.Value;
                 HttpResponseMessage response;
 
-                response = await _httpClient.GetAsync($"api/Locations/GetById?id={idToFetch}");
+                response = await _httpClient.GetAsync($"api/Countries/GetById?id={idToFetch}");
                 if (response.IsSuccessStatusCode)
                 {
                     string data = await response.Content.ReadAsStringAsync();
-                    LocationRequestDto? locationDto = JsonConvert.DeserializeObject<LocationRequestDto>(data);
+                    CountryRequestDto? countryDto = JsonConvert.DeserializeObject<CountryRequestDto>(data);
 
-                    if (locationDto is null)
+                    if (countryDto is null)
                     {
-                        return NotFound($"Category With Id {id} Not Found!!");
+                        return NotFound($"Country With Id {id} Not Found!!");
                     }
 
-                    LocationEditVm locationEditVm = _mapper.Map<LocationEditVm>(locationDto);
-                    return View(locationEditVm);
+                    CountryEditVm countryVm = _mapper.Map<CountryEditVm>(countryDto);
+                    return View(countryVm);
                 }
                 else
                 {
-                    return NotFound($"Location With Id {id} Not Found. API status: {response.StatusCode}");
+                    return NotFound($"Country With Id {id} Not Found. API status: {response.StatusCode}");
                 }
             }
             catch (Exception)
             {
-                TempData["error"] = "Error while trying to get a location";
+                TempData["error"] = "Error while trying to get a country";
                 return RedirectToAction("Index");
             }
         }
@@ -221,10 +180,10 @@ namespace AhorraYa.WebClient.Controllers
                 int idToDelete = id.Value;
 
 
-                HttpResponseMessage response = await _httpClient.DeleteAsync($"api/Locations/Remove?id={idToDelete}");
+                HttpResponseMessage response = await _httpClient.DeleteAsync($"api/Countries/Remove?id={idToDelete}");
                 if (response.IsSuccessStatusCode)
                 {
-                    TempData["success"] = "Location deleted correctly";
+                    TempData["success"] = "Country deleted correctly";
                     return RedirectToAction("Index");
                 }
                 else
@@ -244,3 +203,4 @@ namespace AhorraYa.WebClient.Controllers
         }
     }
 }
+

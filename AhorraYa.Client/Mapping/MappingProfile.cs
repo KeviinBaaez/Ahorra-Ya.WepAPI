@@ -1,12 +1,18 @@
 ﻿using AhorraYa.Application.Dtos.Brand;
 using AhorraYa.Application.Dtos.Category;
+using AhorraYa.Application.Dtos.City;
+using AhorraYa.Application.Dtos.Country;
 using AhorraYa.Application.Dtos.Location;
 using AhorraYa.Application.Dtos.Product;
+using AhorraYa.Application.Dtos.Province;
 using AhorraYa.Application.Dtos.Shop;
 using AhorraYa.WebClient.ViewModels.Brands;
 using AhorraYa.WebClient.ViewModels.Categories;
+using AhorraYa.WebClient.ViewModels.Cities;
+using AhorraYa.WebClient.ViewModels.Countries;
 using AhorraYa.WebClient.ViewModels.Locations;
 using AhorraYa.WebClient.ViewModels.Product;
+using AhorraYa.WebClient.ViewModels.Provinces;
 using AhorraYa.WebClient.ViewModels.Shops;
 using AutoMapper;
 
@@ -21,6 +27,27 @@ namespace AhorraYa.WebClient.Mapping
             LoadProductMapping();
             LoadLocationMapping();
             LoadShopMapping();
+            LoadCountryMapping();
+            LoadProvinceMapping();
+            LoadCityMapping();
+        }
+
+        private void LoadCityMapping()
+        {
+            CreateMap<CityRequestDto, CityEditVm>().ReverseMap();
+            CreateMap<CityResponseDto, CityListVm>().ReverseMap();
+        }
+
+        private void LoadProvinceMapping()
+        {
+            CreateMap<ProvinceRequestDto, ProvinceEditVm>().ReverseMap();
+            CreateMap<ProvinceResponseDto, ProvinceListVm>().ReverseMap();
+        }
+
+        private void LoadCountryMapping()
+        {
+            CreateMap<CountryRequestDto, CountryEditVm>().ReverseMap();
+            CreateMap<CountryResponseDto, CountryListVm>().ReverseMap();
         }
 
         private void LoadShopMapping()

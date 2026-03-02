@@ -6,5 +6,7 @@
         public string CityName { get; set; } = null!;
         public int ProvinceId { get; set; }
         public string ProvinceName { get; set; } = null!;
+        public int CountryId { get; set; }
+        public string CountryName { get; set; } = null!;
     }
 }

@@ -1,8 +1,6 @@
-﻿using AhorraYa.Application.Dtos.Category;
-using AhorraYa.Application.Dtos.Location;
-using AhorraYa.WebClient.ViewModels.Categories;
-using AhorraYa.WebClient.ViewModels.Cities;
-using AhorraYa.WebClient.ViewModels.Locations;
+﻿using AhorraYa.Application.Dtos.Province;
+using AhorraYa.WebClient.ViewModels.Countries;
+using AhorraYa.WebClient.ViewModels.Provinces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -12,14 +10,14 @@ using System.Text;
 
 namespace AhorraYa.WebClient.Controllers
 {
-    public class LocationsController : Controller
+    public class ProvincesController : Controller
     {
         Uri baseAddress = new Uri("https://localhost:7284/");
         private readonly HttpClient _httpClient;
         private readonly IMapper _mapper;
         private readonly string _jwtToken;
 
-        public LocationsController(IMapper mapper)
+        public ProvincesController(IMapper mapper)
         {
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = baseAddress;
@@ -29,22 +27,22 @@ namespace AhorraYa.WebClient.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(string? searchText, string? orderBy)
+        public async Task<IActionResult> Index(string? searchText, string? orderProvinces)
         {
-            List<LocationListVm>? list = new List<LocationListVm>();
+            List<ProvinceListVm>? list = new List<ProvinceListVm>();
             //Paso el token de autorización.
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
             //Envió una petición al endpoint y guardo la rta completa del servidor
-            HttpResponseMessage response = await _httpClient.GetAsync($"api/Locations/All?searchText={searchText}&orderBy={orderBy}");
+            HttpResponseMessage response = await _httpClient.GetAsync($"api/Provinces/All?searchText={searchText}&orderBy={orderProvinces}");
 
             if (response.IsSuccessStatusCode)//(200 y 299)
             {
                 string data = await response.Content.ReadAsStringAsync();
-                list = JsonConvert.DeserializeObject<List<LocationListVm>>(data);
+                list = JsonConvert.DeserializeObject<List<ProvinceListVm>>(data);
             }
 
             ViewBag.CurrentSearchText = searchText;
-            ViewBag.CurrentOrderBy = orderBy ?? "A-Z";
+            ViewBag.CurrentOrderProvinces = orderProvinces ?? "A-Z";
 
             return View(list);
         }
@@ -57,10 +55,10 @@ namespace AhorraYa.WebClient.Controllers
 
             if (id is null || id == 0)
             {
-                var model = new LocationEditVm
+                var model = new ProvinceEditVm
                 {
                     Id = 0,
-                    Cities = await GetCitiesSelectListAsync()
+                    Countries = await GetCountriesSelectListAsync()
                 };
                 return View(model);
             }
@@ -69,21 +67,21 @@ namespace AhorraYa.WebClient.Controllers
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
                 int idToFetch = id.Value;
 
-                response = await _httpClient.GetAsync($"api/Locations/GetById?id={idToFetch}");
+                response = await _httpClient.GetAsync($"api/Provinces/GetById?id={idToFetch}");
                 if (response.IsSuccessStatusCode)
                 {
                     string data = await response.Content.ReadAsStringAsync();
-                    LocationRequestDto? locationRequestDto = JsonConvert.DeserializeObject<LocationRequestDto>(data);
+                    ProvinceRequestDto? provinceRequestDto = JsonConvert.DeserializeObject<ProvinceRequestDto>(data);
 
-                    if (locationRequestDto is null)
+                    if (provinceRequestDto is null)
                     {
-                        return NotFound($"Location With Id {id} Not Found!!");
+                        return NotFound($"Province With Id {id} Not Found!!");
                     }
-                    LocationEditVm locationEditVm = _mapper.Map<LocationEditVm>(locationRequestDto);
-                    locationEditVm.Cities = await GetCitiesSelectListAsync();
-                    return View(locationEditVm);
+                    ProvinceEditVm provinceEditVm = _mapper.Map<ProvinceEditVm>(provinceRequestDto);
+                    provinceEditVm.Countries = await GetCountriesSelectListAsync();
+                    return View(provinceEditVm);
                 }
-                return NotFound($"Location With Id {id} Not Found. API status: {response.StatusCode}");
+                return NotFound($"Province With Id {id} Not Found. API status: {response.StatusCode}");
             }
             catch (Exception)
             {
@@ -94,30 +92,30 @@ namespace AhorraYa.WebClient.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Upsert(LocationEditVm locationEditVm)
+        public async Task<IActionResult> Upsert(ProvinceEditVm provinceEditVm)
         {
             if (ModelState.IsValid)
             {
-                LocationRequestDto locationRequestDto = _mapper.Map<LocationRequestDto>(locationEditVm);
+                ProvinceRequestDto provinceRequestDto = _mapper.Map<ProvinceRequestDto>(provinceEditVm);
                 try
                 {
                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
-                    var jsonContent = JsonConvert.SerializeObject(locationRequestDto);
+                    var jsonContent = JsonConvert.SerializeObject(provinceRequestDto);
                     var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
                     HttpResponseMessage response;
                     string successMessage;
 
-                    if (locationRequestDto.Id == 0)
+                    if (provinceRequestDto.Id == 0)
                     {
-                        response = await _httpClient.PostAsync($"api/Locations/Create", content);
-                        successMessage = "Successfully created Location";
+                        response = await _httpClient.PostAsync($"api/Provinces/Create", content);
+                        successMessage = "Successfully created Province";
                     }
                     else
                     {
-                        string url = $"api/Locations/Update?id={locationRequestDto.Id}";
+                        string url = $"api/Provinces/Update?id={provinceRequestDto.Id}";
                         response = await _httpClient.PutAsync(url, content);
-                        successMessage = "Successfully update location";
+                        successMessage = "Successfully update Province";
                     }
 
                     if (response.IsSuccessStatusCode)
@@ -129,8 +127,7 @@ namespace AhorraYa.WebClient.Controllers
                     {
                         string errorData = await response.Content.ReadAsStringAsync();
                         ModelState.AddModelError("", $"Error {errorData}");
-                        locationEditVm.Cities = await GetCitiesSelectListAsync();
-
+                        provinceEditVm.Countries = await GetCountriesSelectListAsync();
                     }
                 }
                 catch (Exception ex)
@@ -139,34 +136,34 @@ namespace AhorraYa.WebClient.Controllers
                     throw;
                 }
             }
-            return View(locationEditVm);
+            return View(provinceEditVm);
         }
 
-        private async Task<IEnumerable<SelectListItem>> GetCitiesSelectListAsync()
+        private async Task<IEnumerable<SelectListItem>> GetCountriesSelectListAsync()
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _jwtToken);
 
-            var response = await _httpClient.GetAsync("api/Cities/All");
+            var response = await _httpClient.GetAsync("api/Countries/All");
 
             if (!response.IsSuccessStatusCode)
-            {
                 return Enumerable.Empty<SelectListItem>();
-            }
+
             var json = await response.Content.ReadAsStringAsync();
 
-            var cities = JsonConvert.DeserializeObject<List<CityListVm>>(json);
+            var countries = JsonConvert.DeserializeObject<List<CountryListVm>>(json);
 
-            if (cities is null || !cities.Any())
-            {
+            if (countries == null || !countries.Any())
                 return Enumerable.Empty<SelectListItem>();
-            }
 
-            return cities.Select(c => new SelectListItem
+            return countries.Select(c => new SelectListItem
             {
                 Value = c.Id.ToString(),
-                Text = c.CityName
+                Text = c.CountryName
             });
         }
+
+
 
         public async Task<IActionResult> Delete(int? id)
         {
@@ -180,28 +177,28 @@ namespace AhorraYa.WebClient.Controllers
                 int idToFetch = id.Value;
                 HttpResponseMessage response;
 
-                response = await _httpClient.GetAsync($"api/Locations/GetById?id={idToFetch}");
+                response = await _httpClient.GetAsync($"api/Provinces/GetById?id={idToFetch}");
                 if (response.IsSuccessStatusCode)
                 {
                     string data = await response.Content.ReadAsStringAsync();
-                    LocationRequestDto? locationDto = JsonConvert.DeserializeObject<LocationRequestDto>(data);
+                    ProvinceRequestDto? provinceDto = JsonConvert.DeserializeObject<ProvinceRequestDto>(data);
 
-                    if (locationDto is null)
+                    if (provinceDto is null)
                     {
-                        return NotFound($"Category With Id {id} Not Found!!");
+                        return NotFound($"Province With Id {id} Not Found!!");
                     }
 
-                    LocationEditVm locationEditVm = _mapper.Map<LocationEditVm>(locationDto);
-                    return View(locationEditVm);
+                    ProvinceEditVm provinceEditVm = _mapper.Map<ProvinceEditVm>(provinceDto);
+                    return View(provinceEditVm);
                 }
                 else
                 {
-                    return NotFound($"Location With Id {id} Not Found. API status: {response.StatusCode}");
+                    return NotFound($"Province With Id {id} Not Found. API status: {response.StatusCode}");
                 }
             }
             catch (Exception)
             {
-                TempData["error"] = "Error while trying to get a location";
+                TempData["error"] = "Error while trying to get a province";
                 return RedirectToAction("Index");
             }
         }
@@ -221,10 +218,10 @@ namespace AhorraYa.WebClient.Controllers
                 int idToDelete = id.Value;
 
 
-                HttpResponseMessage response = await _httpClient.DeleteAsync($"api/Locations/Remove?id={idToDelete}");
+                HttpResponseMessage response = await _httpClient.DeleteAsync($"api/Provinces/Remove?id={idToDelete}");
                 if (response.IsSuccessStatusCode)
                 {
-                    TempData["success"] = "Location deleted correctly";
+                    TempData["success"] = "Province deleted correctly";
                     return RedirectToAction("Index");
                 }
                 else
