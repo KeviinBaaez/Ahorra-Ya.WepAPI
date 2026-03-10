@@ -1,4 +1,5 @@
 ﻿using AhorraYa.Application.Dtos.Shop;
+using AhorraYa.WebClient.Services;
 using AhorraYa.WebClient.ViewModels.Locations;
 using AhorraYa.WebClient.ViewModels.Shops;
 using AutoMapper;
@@ -12,18 +13,14 @@ namespace AhorraYa.WebClient.Controllers
 {
     public class ShopsController : Controller
     {
-        Uri baseAddress = new Uri("https://localhost:7284/");
-        private readonly HttpClient _httpClient;
+        private readonly ApiService _apiService;
         private readonly IMapper _mapper;
-        private readonly string _jwtToken;
+        private HttpClient? _httpClient;
 
-        public ShopsController(IMapper mapper)
+        public ShopsController(IMapper mapper, ApiService apiService)
         {
-            _httpClient = new HttpClient();
-            _httpClient.BaseAddress = baseAddress;
             _mapper = mapper;
-            //Una vez autorizado mediante la webAPI, establecer tu nuevo token aquí.
-            _jwtToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjJlZDM4OTZjLWM2ZDUtNDUzYi1hMzE4LTA4ZGU1NDgwZmM5NyIsInN1YiI6IjJlZDM4OTZjLWM2ZDUtNDUzYi1hMzE4LTA4ZGU1NDgwZmM5NyIsIm5hbWUiOiJBZG1pbiIsImVtYWlsIjoiYWRtaW5AYWhvcnJheWEuY29tIiwicm9sZSI6IkFkbWluIiwibmJmIjoxNzcyNDY4OTQ1LCJleHAiOjE3NzI0ODMzNDUsImlhdCI6MTc3MjQ2ODk0NX0.1pObFuc-jE0tXr6ntKqvlUZkb1L1YHpiZR-krd0EaTWshOEak8JinEyd0bvq9Z1OwbmzhYzAcBSC46MSL87yHQ";
+            _apiService = apiService;
         }
 
         [HttpGet]
@@ -31,7 +28,7 @@ namespace AhorraYa.WebClient.Controllers
         {
             List<ShopListVm>? list = new List<ShopListVm>();
             //Paso el token de autorización.
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+            _httpClient = _apiService.CreateClient();
             //Envió una petición al endpoint y guardo la rta completa del servidor
             HttpResponseMessage response = await _httpClient.GetAsync($"api/Shops/All?searchText={searchText}&orderBy={orderBy}");
 
@@ -49,7 +46,7 @@ namespace AhorraYa.WebClient.Controllers
 
         public async Task<IActionResult> Upsert(int? id)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+            _httpClient = _apiService.CreateClient();
 
             HttpResponseMessage response;
 
@@ -64,7 +61,7 @@ namespace AhorraYa.WebClient.Controllers
             }
             try
             {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                _httpClient = _apiService.CreateClient();
                 int idToFetch = id.Value;
 
                 response = await _httpClient.GetAsync($"api/Shops/GetById?id={idToFetch}");
@@ -99,7 +96,7 @@ namespace AhorraYa.WebClient.Controllers
                 ShopRequestDto ShopRequestDto = _mapper.Map<ShopRequestDto>(ShopEditVm);
                 try
                 {
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                    _httpClient = _apiService.CreateClient();
                     var jsonContent = JsonConvert.SerializeObject(ShopRequestDto);
                     var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
@@ -142,7 +139,7 @@ namespace AhorraYa.WebClient.Controllers
 
         private async Task<IEnumerable<SelectListItem>> GetLocationsSelectListAsync()
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+            _httpClient = _apiService.CreateClient();
 
             var response = await _httpClient.GetAsync("api/Locations/All");
 
@@ -174,7 +171,7 @@ namespace AhorraYa.WebClient.Controllers
             }
             try
             {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                _httpClient = _apiService.CreateClient();
                 int idToFetch = id.Value;
                 HttpResponseMessage response;
 
@@ -215,7 +212,7 @@ namespace AhorraYa.WebClient.Controllers
             }
             try
             {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                _httpClient = _apiService.CreateClient();
                 int idToDelete = id.Value;
 
 

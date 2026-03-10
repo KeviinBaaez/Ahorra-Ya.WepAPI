@@ -1,3 +1,5 @@
+using AhorraYa.WebClient.Services;
+
 namespace AhorraYa.Client
 {
     public class Program
@@ -8,16 +10,19 @@ namespace AhorraYa.Client
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-
             builder.Services.AddAutoMapper(typeof(Program));
+
+            builder.Services.AddHttpClient();  
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<ApiService>();
+            builder.Services.AddSession();     
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseExceptionHandler("/Login/Error");
                 app.UseHsts();
             }
 
@@ -26,11 +31,13 @@ namespace AhorraYa.Client
 
             app.UseRouting();
 
+            app.UseSession();   // middleware
+
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Logins}/{action=Login}/{id?}");
 
             app.Run();
         }

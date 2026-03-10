@@ -1,4 +1,5 @@
 ﻿using AhorraYa.Application.Dtos.Category;
+using AhorraYa.WebClient.Services;
 using AhorraYa.WebClient.ViewModels.Categories;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -10,18 +11,14 @@ namespace AhorraYa.WebClient.Controllers
 {
     public class CategoriesController : Controller
     {
-        Uri baseAddress = new Uri("https://localhost:7284/");
-        private readonly HttpClient _httpClient;
+        private readonly ApiService _apiService;
         private readonly IMapper _mapper;
-        private readonly string _jwtToken;
+        private HttpClient? _httpClient;
 
-        public CategoriesController(IMapper mapper)
+        public CategoriesController(IMapper mapper, ApiService apiService)
         {
-            _httpClient = new HttpClient();
-            _httpClient.BaseAddress = baseAddress;
             _mapper = mapper;
-            //Una vez autorizado mediante la webAPI, establecer tu nuevo token aquí.
-            _jwtToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjJlZDM4OTZjLWM2ZDUtNDUzYi1hMzE4LTA4ZGU1NDgwZmM5NyIsInN1YiI6IjJlZDM4OTZjLWM2ZDUtNDUzYi1hMzE4LTA4ZGU1NDgwZmM5NyIsIm5hbWUiOiJBZG1pbiIsImVtYWlsIjoiYWRtaW5AYWhvcnJheWEuY29tIiwicm9sZSI6IkFkbWluIiwibmJmIjoxNzcyNDY4OTQ1LCJleHAiOjE3NzI0ODMzNDUsImlhdCI6MTc3MjQ2ODk0NX0.1pObFuc-jE0tXr6ntKqvlUZkb1L1YHpiZR-krd0EaTWshOEak8JinEyd0bvq9Z1OwbmzhYzAcBSC46MSL87yHQ";
+            _apiService = apiService;
         }
 
         [HttpGet]
@@ -29,7 +26,7 @@ namespace AhorraYa.WebClient.Controllers
         {
             List<CategoryListVm> list = new List<CategoryListVm>();
 
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+            _httpClient = _apiService.CreateClient();
             HttpResponseMessage response = await _httpClient.GetAsync($"api/Categories/All?searchText={searchText}&orderBy={orderCategories}");
 
             if (response.IsSuccessStatusCode)
@@ -55,7 +52,7 @@ namespace AhorraYa.WebClient.Controllers
             }
             try
             {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                _httpClient = _apiService.CreateClient();
                 int idToFetch = id.Value;
                 HttpResponseMessage response = await _httpClient.GetAsync($"api/Categories/GetById?id={idToFetch}");
                 if (response.IsSuccessStatusCode)
@@ -89,7 +86,7 @@ namespace AhorraYa.WebClient.Controllers
                 CategoryRequestDto categoryRequest = _mapper.Map<CategoryRequestDto>(categoryVm);
                 try
                 {
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                    _httpClient = _apiService.CreateClient();
                     string jsonContent = JsonConvert.SerializeObject(categoryRequest);
                     var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
@@ -135,7 +132,7 @@ namespace AhorraYa.WebClient.Controllers
             }
             try
             {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                _httpClient = _apiService.CreateClient();
                 int idToFetch = id.Value;
                 HttpResponseMessage response;
 
@@ -176,7 +173,7 @@ namespace AhorraYa.WebClient.Controllers
             }
             try
             {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                _httpClient = _apiService.CreateClient();
                 int idToDelete = id.Value;
 
 

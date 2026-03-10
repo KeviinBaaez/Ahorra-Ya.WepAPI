@@ -1,38 +1,32 @@
 ﻿using AhorraYa.Application.Dtos.Brand;
+using AhorraYa.WebClient.Services;
 using AhorraYa.WebClient.ViewModels.Brands;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Net.Http.Headers;
 using System.Text;
 
 namespace AhorraYa.WebClient.Controllers
 {
     public class BrandsController : Controller
     {
-        Uri baseAddress = new Uri("https://localhost:7284/");
-        private readonly HttpClient _httpClient;
+        private readonly ApiService _apiService;
         private readonly IMapper _mapper;
-        private readonly string _jwtToken;
-
-        public BrandsController(IMapper mapper)
+        private HttpClient? _httpClient;
+        public BrandsController(IMapper mapper, ApiService apiService)
         {
             _mapper = mapper;
-            _httpClient = new HttpClient();
-            _httpClient.BaseAddress = baseAddress;
-            //Una vez autorizado mediante la webAPI, establecer tu nuevo token aquí.
-            _jwtToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjJlZDM4OTZjLWM2ZDUtNDUzYi1hMzE4LTA4ZGU1NDgwZmM5NyIsInN1YiI6IjJlZDM4OTZjLWM2ZDUtNDUzYi1hMzE4LTA4ZGU1NDgwZmM5NyIsIm5hbWUiOiJBZG1pbiIsImVtYWlsIjoiYWRtaW5AYWhvcnJheWEuY29tIiwicm9sZSI6IkFkbWluIiwibmJmIjoxNzcyNDY4OTQ1LCJleHAiOjE3NzI0ODMzNDUsImlhdCI6MTc3MjQ2ODk0NX0.1pObFuc-jE0tXr6ntKqvlUZkb1L1YHpiZR-krd0EaTWshOEak8JinEyd0bvq9Z1OwbmzhYzAcBSC46MSL87yHQ";
+            _apiService = apiService;
         }
         [HttpGet]
         public async Task<IActionResult> Index(string? searchText, string? orderBrands)
         {
+            _httpClient = _apiService.CreateClient();
             List<BrandListVm>? list = new List<BrandListVm>();
-            //Paso el token de autorización.
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
             //Envió una petición al endpoint y guardo la rta completa del servidor
             HttpResponseMessage response = await _httpClient.GetAsync($"api/Brands/All?searchText={searchText}&orderBy={orderBrands}");
 
-            if(response.IsSuccessStatusCode)//(200 y 299)
+            if (response.IsSuccessStatusCode)//(200 y 299)
             {
                 string data = await response.Content.ReadAsStringAsync();
                 list = JsonConvert.DeserializeObject<List<BrandListVm>>(data);
@@ -45,7 +39,7 @@ namespace AhorraYa.WebClient.Controllers
         }
 
         public async Task<IActionResult> Upsert(int? id)
-        { 
+        {
             if (id is null || id == 0)
             {
                 var model = new BrandEditVm()
@@ -56,7 +50,8 @@ namespace AhorraYa.WebClient.Controllers
             }
             try
             {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+
+                _httpClient = _apiService.CreateClient();
                 int idToFetch = id.Value;
 
                 HttpResponseMessage response = await _httpClient.GetAsync($"api/Brands/GetById?id={idToFetch}");
@@ -92,7 +87,7 @@ namespace AhorraYa.WebClient.Controllers
                 BrandRequestDto brandRequestDto = _mapper.Map<BrandRequestDto>(brandVm);
                 try
                 {
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                    _httpClient = _apiService.CreateClient();
                     string jsonContent = JsonConvert.SerializeObject(brandRequestDto);
                     var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
@@ -132,25 +127,25 @@ namespace AhorraYa.WebClient.Controllers
 
         public async Task<IActionResult> Delete(int? id)
         {
-            if(id is null || id == 0)
+            if (id is null || id == 0)
             {
                 return NotFound();
             }
 
             try
             {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                _httpClient = _apiService.CreateClient();
                 int IdToFetch = id.Value;
                 HttpResponseMessage response;
 
                 response = await _httpClient.GetAsync($"api/Brands/GetById?id={IdToFetch}");
 
-                if(response.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode)
                 {
                     string data = await response.Content.ReadAsStringAsync();
                     BrandRequestDto? brandRequestDto = JsonConvert.DeserializeObject<BrandRequestDto>(data);
 
-                    if(brandRequestDto is null)
+                    if (brandRequestDto is null)
                     {
                         return NotFound($"Brand With Id {id} Not Found!!");
                     }
@@ -174,17 +169,17 @@ namespace AhorraYa.WebClient.Controllers
         [ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirm(int? id)
         {
-            if(id is null || id == 0) 
-            { 
-                return NotFound(); 
+            if (id is null || id == 0)
+            {
+                return NotFound();
             }
             try
             {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                _httpClient = _apiService.CreateClient();
                 int idToDelete = id.Value;
 
                 HttpResponseMessage response = await _httpClient.DeleteAsync($"api/Brands/Remove?id={idToDelete}");
-                if(response.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode)
                 {
                     TempData["success"] = "Brand deleted correctly";
                     return RedirectToAction("Index");

@@ -1,4 +1,5 @@
 ﻿using AhorraYa.Application.Dtos.City;
+using AhorraYa.WebClient.Services;
 using AhorraYa.WebClient.ViewModels.Cities;
 using AhorraYa.WebClient.ViewModels.Countries;
 using AhorraYa.WebClient.ViewModels.Provinces;
@@ -13,26 +14,21 @@ namespace AhorraYa.WebClient.Controllers
 {
     public class CitiesController : Controller
     {
-        Uri baseAddress = new Uri("https://localhost:7284/");
-        private readonly HttpClient _httpClient;
+        private readonly ApiService _apiService;
         private readonly IMapper _mapper;
-        private readonly string _jwtToken;
+        private HttpClient? _httpClient;
 
-        public CitiesController(IMapper mapper)
+        public CitiesController(IMapper mapper, ApiService apiService)
         {
-            _httpClient = new HttpClient();
-            _httpClient.BaseAddress = baseAddress;
+            _apiService = apiService;
             _mapper = mapper;
-            //Una vez autorizado mediante la webAPI, establecer tu nuevo token aquí.
-            _jwtToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjJlZDM4OTZjLWM2ZDUtNDUzYi1hMzE4LTA4ZGU1NDgwZmM5NyIsInN1YiI6IjJlZDM4OTZjLWM2ZDUtNDUzYi1hMzE4LTA4ZGU1NDgwZmM5NyIsIm5hbWUiOiJBZG1pbiIsImVtYWlsIjoiYWRtaW5AYWhvcnJheWEuY29tIiwicm9sZSI6IkFkbWluIiwibmJmIjoxNzcyNDY4OTQ1LCJleHAiOjE3NzI0ODMzNDUsImlhdCI6MTc3MjQ2ODk0NX0.1pObFuc-jE0tXr6ntKqvlUZkb1L1YHpiZR-krd0EaTWshOEak8JinEyd0bvq9Z1OwbmzhYzAcBSC46MSL87yHQ";
         }
 
         [HttpGet]
         public async Task<IActionResult> Index(string? searchText, string? orderCities)
         {
             List<CityListVm>? list = new List<CityListVm>();
-            //Paso el token de autorización.
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+            _httpClient = _apiService.CreateClient();
             //Envió una petición al endpoint y guardo la rta completa del servidor
             HttpResponseMessage response = await _httpClient.GetAsync($"api/Cities/All?searchText={searchText}&orderBy={orderCities}");
 
@@ -50,7 +46,7 @@ namespace AhorraYa.WebClient.Controllers
 
         public async Task<IActionResult> Upsert(int? id)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+            _httpClient = _apiService.CreateClient();
 
             HttpResponseMessage response;
 
@@ -65,7 +61,7 @@ namespace AhorraYa.WebClient.Controllers
             }
             try
             {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                _httpClient = _apiService.CreateClient();
                 int idToFetch = id.Value;
 
                 response = await _httpClient.GetAsync($"api/Cities/GetById?id={idToFetch}");
@@ -100,7 +96,7 @@ namespace AhorraYa.WebClient.Controllers
                 CityRequestDto cityRequestDto = _mapper.Map<CityRequestDto>(cityEditVm);
                 try
                 {
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                    _httpClient = _apiService.CreateClient();
                     var jsonContent = JsonConvert.SerializeObject(cityRequestDto);
                     var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
@@ -142,8 +138,7 @@ namespace AhorraYa.WebClient.Controllers
 
         private async Task<IEnumerable<SelectListItem>> GetProvincesSelectListAsync()
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _jwtToken);
+            _httpClient = _apiService.CreateClient();
 
             var response = await _httpClient.GetAsync("api/Provinces/All");
 
@@ -166,8 +161,7 @@ namespace AhorraYa.WebClient.Controllers
 
         private async Task<IEnumerable<SelectListItem>> GetCountriesSelectListAsync()
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _jwtToken);
+            _httpClient = _apiService.CreateClient();
 
             var response = await _httpClient.GetAsync($"api/Countries/All");
 
@@ -198,7 +192,7 @@ namespace AhorraYa.WebClient.Controllers
             }
             try
             {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                _httpClient = _apiService.CreateClient();
                 int idToFetch = id.Value;
                 HttpResponseMessage response;
 
@@ -239,7 +233,7 @@ namespace AhorraYa.WebClient.Controllers
             }
             try
             {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                _httpClient = _apiService.CreateClient();
                 int idToDelete = id.Value;
 
 

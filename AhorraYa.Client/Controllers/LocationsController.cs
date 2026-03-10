@@ -1,5 +1,6 @@
 ﻿using AhorraYa.Application.Dtos.Category;
 using AhorraYa.Application.Dtos.Location;
+using AhorraYa.WebClient.Services;
 using AhorraYa.WebClient.ViewModels.Categories;
 using AhorraYa.WebClient.ViewModels.Cities;
 using AhorraYa.WebClient.ViewModels.Locations;
@@ -14,26 +15,21 @@ namespace AhorraYa.WebClient.Controllers
 {
     public class LocationsController : Controller
     {
-        Uri baseAddress = new Uri("https://localhost:7284/");
-        private readonly HttpClient _httpClient;
+        private readonly ApiService _apiService;
         private readonly IMapper _mapper;
-        private readonly string _jwtToken;
+        private HttpClient? _httpClient;
 
-        public LocationsController(IMapper mapper)
+        public LocationsController(IMapper mapper, ApiService apiService)
         {
-            _httpClient = new HttpClient();
-            _httpClient.BaseAddress = baseAddress;
             _mapper = mapper;
-            //Una vez autorizado mediante la webAPI, establecer tu nuevo token aquí.
-            _jwtToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjJlZDM4OTZjLWM2ZDUtNDUzYi1hMzE4LTA4ZGU1NDgwZmM5NyIsInN1YiI6IjJlZDM4OTZjLWM2ZDUtNDUzYi1hMzE4LTA4ZGU1NDgwZmM5NyIsIm5hbWUiOiJBZG1pbiIsImVtYWlsIjoiYWRtaW5AYWhvcnJheWEuY29tIiwicm9sZSI6IkFkbWluIiwibmJmIjoxNzcyNDY4OTQ1LCJleHAiOjE3NzI0ODMzNDUsImlhdCI6MTc3MjQ2ODk0NX0.1pObFuc-jE0tXr6ntKqvlUZkb1L1YHpiZR-krd0EaTWshOEak8JinEyd0bvq9Z1OwbmzhYzAcBSC46MSL87yHQ";
+            _apiService = apiService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index(string? searchText, string? orderBy)
         {
             List<LocationListVm>? list = new List<LocationListVm>();
-            //Paso el token de autorización.
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+            _httpClient = _apiService.CreateClient();
             //Envió una petición al endpoint y guardo la rta completa del servidor
             HttpResponseMessage response = await _httpClient.GetAsync($"api/Locations/All?searchText={searchText}&orderBy={orderBy}");
 
@@ -51,7 +47,7 @@ namespace AhorraYa.WebClient.Controllers
 
         public async Task<IActionResult> Upsert(int? id)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+            _httpClient = _apiService.CreateClient();
 
             HttpResponseMessage response;
 
@@ -66,7 +62,7 @@ namespace AhorraYa.WebClient.Controllers
             }
             try
             {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                _httpClient = _apiService.CreateClient();
                 int idToFetch = id.Value;
 
                 response = await _httpClient.GetAsync($"api/Locations/GetById?id={idToFetch}");
@@ -101,7 +97,7 @@ namespace AhorraYa.WebClient.Controllers
                 LocationRequestDto locationRequestDto = _mapper.Map<LocationRequestDto>(locationEditVm);
                 try
                 {
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                    _httpClient = _apiService.CreateClient();
                     var jsonContent = JsonConvert.SerializeObject(locationRequestDto);
                     var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
@@ -144,7 +140,7 @@ namespace AhorraYa.WebClient.Controllers
 
         private async Task<IEnumerable<SelectListItem>> GetCitiesSelectListAsync()
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+            _httpClient = _apiService.CreateClient();
 
             var response = await _httpClient.GetAsync("api/Cities/All");
 
@@ -176,7 +172,7 @@ namespace AhorraYa.WebClient.Controllers
             }
             try
             {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                _httpClient = _apiService.CreateClient();
                 int idToFetch = id.Value;
                 HttpResponseMessage response;
 
@@ -217,7 +213,7 @@ namespace AhorraYa.WebClient.Controllers
             }
             try
             {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                _httpClient = _apiService.CreateClient();
                 int idToDelete = id.Value;
 
 
