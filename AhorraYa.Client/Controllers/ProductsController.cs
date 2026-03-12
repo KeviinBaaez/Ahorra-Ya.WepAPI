@@ -17,10 +17,13 @@ namespace AhorraYa.WebClient.Controllers
         private readonly IMapper _mapper;
         private HttpClient? _httpClient;
 
-        public ProductsController(IMapper mapper, ApiService apiService)
+        private readonly IWebHostEnvironment _environment;
+
+        public ProductsController(IMapper mapper, ApiService apiService, IWebHostEnvironment environment)
         {
             _mapper = mapper;
             _apiService = apiService;
+            _environment = environment;
         }
 
         [HttpGet]
@@ -81,9 +84,9 @@ namespace AhorraYa.WebClient.Controllers
                 }
                 return NotFound($"Product With Id {id} Not Found. API status: {response.StatusCode}");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                ModelState.AddModelError("", $"Error {ex.Message}");
                 throw;
             }
         }
@@ -94,6 +97,43 @@ namespace AhorraYa.WebClient.Controllers
         {
             if (ModelState.IsValid)
             {
+                if(productEditVm.ImageFile != null && productEditVm.ImageFile.Length > 0)
+                {
+                    string folder = Path.Combine(_environment.WebRootPath, "Images/Products");
+
+                    if(!Directory.Exists(folder))
+                    {
+                        Directory.CreateDirectory(folder);
+                    }
+
+                    //eliminar img anterior
+                    if (!string.IsNullOrEmpty(productEditVm.Image))
+                    {
+                        string oldPath = Path.Combine(_environment.WebRootPath, productEditVm.Image.TrimStart('/'));
+
+                        if (System.IO.File.Exists(oldPath))
+                        {
+                            System.IO.File.Delete(oldPath);
+                        }
+                    }
+
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(productEditVm.ImageFile.FileName);
+
+                    string filePath = Path.Combine(folder, fileName);
+                    try
+                    {
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await productEditVm.ImageFile.CopyToAsync(stream);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError("", "Error saving image: " + ex.Message);
+                    }
+
+                    productEditVm.Image = "/Images/Products/" + fileName;
+                }
                 ProductRequestDto productRequestDto = _mapper.Map<ProductRequestDto>(productEditVm);
                 try
                 {
@@ -132,7 +172,6 @@ namespace AhorraYa.WebClient.Controllers
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("", $"Error {ex.Message}");
-                    throw;
                 }
             }
             return View(productEditVm);

@@ -1,8 +1,9 @@
 ﻿@model ProductEditVm
 
-<form method="post">
+<form asp-action="Upsert" method="post" enctype="multipart/form-data">
 	@Html.AntiForgeryToken()
 	<input type="hidden" asp-for="Id" />
+	<input type="hidden" asp-for="Image" />
 	<div class=" border p-3 m-4 w-75 mx-auto">
 		<div class="row pb-2">
 			<h2 class="text-primary">@(Model.Id == 0 ? "Add Product" : "Update Product")</h2>
@@ -16,7 +17,7 @@
 		</div>
 		<div class="mb-3 row p-1">
 			<label class="p-0" asp-for="BarCode"></label>
-			<textarea class="form-control" asp-for="BarCode" style="width:100%; height:10"></textarea>
+			<textarea class="form-control" asp-for="BarCode" style="width:100%; height:100px"></textarea>
 			<span class="text-danger" asp-validation-for="BarCode"></span>
 		</div>
 		<div class="mb-3 row p-1">
@@ -32,6 +33,20 @@
 				<option selected disabled="">-- Select Category --</option>
 			</select>
 			<span class="text-danger" asp-validation-for="CategoryId"></span>
+		</div>
+		<div class="mb-3 row p-1">
+			<label asp-for="ImageFile" class="p-0">Product Image</label>
+			<input type="file" class="form-control" asp-for="ImageFile" accept="image/*" onchange="previewImage(event)" />
+
+			@if (!string.IsNullOrEmpty(Model.Image))
+			{
+			<img id="preview" src="@Model.Image" style="max-width:150px; max-height:150px; margin-top:10px; display:block;" />
+			}
+			else
+			{
+				<img id="preview" src="~/Images/Products/SinImagenDisponible.jpg" style="max-width:150px; max-height:150px; margin-top:10px; display:block;" />
+			}
+
 		</div>
 		@if (Model.Id == 0)
 		{

@@ -1,6 +1,6 @@
-﻿namespace AhorraYa.Application.Dtos.PriceOfShop
+﻿namespace AhorraYa.WebClient.ViewModels.PricesOfShops
 {
-    public class PriceOfShopResponseDto
+    public class PriceOfShopListVm
     {
         public int Id { get; set; }
         public string Product { get; set; } = null!;

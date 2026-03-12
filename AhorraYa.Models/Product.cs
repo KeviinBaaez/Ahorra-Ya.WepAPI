@@ -35,6 +35,8 @@ namespace AhorraYa.Entities
         [StringLength(13)]
         [RegularExpression(@"^\{13}$")]
         public decimal? BarCode { get; set; }
+
+        public string? Image { get; set; }
         #endregion
 
         #region Virtual
@@ -105,9 +107,10 @@ namespace AhorraYa.Entities
             bool sameProductName = string.Equals(Name.Trim(), product.Name.Trim(), StringComparison.OrdinalIgnoreCase);
             bool sameBrandId = this.BrandId == product.BrandId;
             bool sameCategoryId = this.CategoryId == product.CategoryId;
+            bool sameImage = this.Image == product.Image;
 
 
-            return sameProductName && sameBrandId && sameCategoryId;
+            return sameProductName && sameBrandId && sameCategoryId && sameImage;
 
         }
 

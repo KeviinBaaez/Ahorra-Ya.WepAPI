@@ -18,3 +18,21 @@ function confirm(id, name, propertie) {
         }
     });
 }
+
+function previewImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const preview = document.getElementById("preview");
+        if (preview) {
+            preview.src = e.target.result;
+
+            // aseguramos tamaño máximo
+            preview.style.maxWidth = "150px";
+            preview.style.maxHeight = "150px";
+        }
+    };
+    reader.readAsDataURL(file);
+}

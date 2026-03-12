@@ -9,7 +9,7 @@ namespace AhorraYa.WebApi.Mapping
         public PriceOfShopMappingProfile()
         {
             CreateMap<PriceOfShop, PriceOfShopResponseDto>()
-                .ForMember(dest => dest.Produc,
+                .ForMember(dest => dest.Product,
                 opt => opt.MapFrom(src => src.Product!.Name))
                 .ForMember(dest => dest.Brand,
                 opt => opt.MapFrom(src => src.Product!.Brand!.BrandName))

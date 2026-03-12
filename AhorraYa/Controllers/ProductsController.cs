@@ -201,6 +201,7 @@ namespace AhorraYa.WebApi.Controllers
                     _product.Exist(p => p.Name == productBack.Name &&
                                  p.BrandId == productBack.BrandId &&
                                  p.CategoryId == productBack.CategoryId &&
+                                 p.Image == productBack.Image &&
                                  p.Id != productBack.Id);
                     #endregion
                     _product.Save(productBack);
