@@ -44,8 +44,15 @@ namespace AhorraYa.WebClient.Controllers
             var token = JsonConvert.DeserializeObject<TokenResponseVm>(result);
 
             HttpContext.Session.SetString("JWToken", token.Token);
+            HttpContext.Session.SetString("UserName", token.UserName);
 
             return RedirectToAction("Index", "Home");
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login", "Logins");
         }
     }
 }

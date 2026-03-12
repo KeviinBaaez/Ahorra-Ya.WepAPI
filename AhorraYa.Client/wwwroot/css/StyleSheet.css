@@ -10,3 +10,16 @@
     color: #007bff;
     transform: scale(1.05);
 }
+
+﻿.btnLogin {
+    border-radius: 30px;
+    background-color: transparent;
+    transition: background-color 0.5s, color 0.5s, transform 0.3s;
+}
+
+.btnLogin:hover {
+    border-radius: 30px;
+    background-color: #B0A9AF;
+    color: #007bff;
+    transform: scale(1.05);
+}

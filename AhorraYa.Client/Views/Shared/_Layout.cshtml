@@ -34,12 +34,40 @@
                         <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Cities" asp-action="Index">Cities</a></li>
                         <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Provinces" asp-action="Index">Provinces</a></li>
                         <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Countries" asp-action="Index">Countries</a></li>
+                        
 
 
 
                         <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></li>
+                      
                     </ul>
                 </div>
+                @{
+                    var user = Context.Session.GetString("UserName");
+                }
+                @if (!string.IsNullOrEmpty(user))
+                {
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            @user
+                        </button>
+
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" asp-controller="Logins" asp-action="Logout">
+                                    Cerrar Sesión
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    <a class="btn rounded-fill btnLogin"
+                        asp-controller="Logins" asp-action="Login">
+                        Login
+                    </a>
+                }
             </div>
         </nav>
     </header>

@@ -1,6 +1,4 @@
-﻿using AhorraYa.Application.Dtos.Brand;
-using AhorraYa.Application.Dtos.Category;
-using AhorraYa.Application.Dtos.Product;
+﻿using AhorraYa.Application.Dtos.Product;
 using AhorraYa.WebClient.Services;
 using AhorraYa.WebClient.ViewModels.Brands;
 using AhorraYa.WebClient.ViewModels.Categories;
@@ -9,7 +7,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
-using System.Net.Http.Headers;
 using System.Text;
 
 namespace AhorraYa.WebClient.Controllers
@@ -22,7 +19,7 @@ namespace AhorraYa.WebClient.Controllers
 
         public ProductsController(IMapper mapper, ApiService apiService)
         {
-            _mapper = mapper; 
+            _mapper = mapper;
             _apiService = apiService;
         }
 
@@ -95,7 +92,7 @@ namespace AhorraYa.WebClient.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Upsert(ProductEditVm productEditVm)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 ProductRequestDto productRequestDto = _mapper.Map<ProductRequestDto>(productEditVm);
                 try
@@ -107,7 +104,7 @@ namespace AhorraYa.WebClient.Controllers
                     HttpResponseMessage response;
                     string successMessage;
 
-                    if(productRequestDto.Id == 0)
+                    if (productRequestDto.Id == 0)
                     {
                         response = await _httpClient.PostAsync($"api/Products/Create", content);
                         successMessage = "Successfully created Product";
@@ -115,7 +112,7 @@ namespace AhorraYa.WebClient.Controllers
                     else
                     {
                         string url = $"api/Products/Update?id={productRequestDto.Id}";
-                        response = await _httpClient.PutAsync(url , content);
+                        response = await _httpClient.PutAsync(url, content);
                         successMessage = "Successfully update Product";
                     }
 

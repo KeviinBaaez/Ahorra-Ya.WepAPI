@@ -102,11 +102,12 @@ namespace AhorraYa.Entities
                 return false;
 
             //Comparación insensible a mayúsculas/ minúsculas
-            bool sameProducName = string.Equals(Name.Trim(), product.Name.Trim(), StringComparison.OrdinalIgnoreCase);
+            bool sameProductName = string.Equals(Name.Trim(), product.Name.Trim(), StringComparison.OrdinalIgnoreCase);
             bool sameBrandId = this.BrandId == product.BrandId;
+            bool sameCategoryId = this.CategoryId == product.CategoryId;
 
 
-            return sameProducName && sameBrandId;
+            return sameProductName && sameBrandId && sameCategoryId;
 
         }
 
@@ -115,7 +116,8 @@ namespace AhorraYa.Entities
         {
             return HashCode.Combine(
                 Name?.Trim().ToLowerInvariant(),
-                BrandId);
+                BrandId,
+                CategoryId);
         }
     }
 }

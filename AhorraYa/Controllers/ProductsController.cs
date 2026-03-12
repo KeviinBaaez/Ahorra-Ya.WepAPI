@@ -200,6 +200,7 @@ namespace AhorraYa.WebApi.Controllers
                     //De momento me funciona, pero siento que no es la mejor opción de establecer esto acá
                     _product.Exist(p => p.Name == productBack.Name &&
                                  p.BrandId == productBack.BrandId &&
+                                 p.CategoryId == productBack.CategoryId &&
                                  p.Id != productBack.Id);
                     #endregion
                     _product.Save(productBack);
