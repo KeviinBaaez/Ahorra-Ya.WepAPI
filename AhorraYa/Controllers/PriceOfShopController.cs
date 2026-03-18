@@ -7,6 +7,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 
 namespace AhorraYa.WebApi.Controllers
 {
@@ -33,11 +34,37 @@ namespace AhorraYa.WebApi.Controllers
         }
 
         [HttpGet("All")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(string? searchText, int? brandId, int? shopId, string? orderBy = "A-Z")
         {
             try
             {
-                var products = _mapper.Map<IList<PriceOfShopResponseDto>>(_priceOfShop.GetAll());
+                Func<IQueryable<PriceOfShop>, IOrderedQueryable<PriceOfShop>>? order = null;
+                if(orderBy == "A-Z")
+                {
+                    order = p => p.OrderBy(p => p.Price);
+                }
+                else
+                {
+                    order = p => p.OrderByDescending(p => p.Price);
+                }
+                Expression<Func<PriceOfShop, bool>>? filter = null;
+
+                if (searchText != null)
+                {
+                    filter = p => p.Product!.Name!.Contains(searchText) || p.Product!.Brand!.BrandName.Contains(searchText);
+                }
+                Expression<Func<PriceOfShop, bool>>? filterByBrands = null;
+                if(brandId != null)
+                {
+                    filterByBrands = p => p.Product!.BrandId == brandId;
+                }
+                Expression<Func<PriceOfShop, bool>>? filterByShops = null;
+                if(shopId != null)
+                {
+                    filterByShops = p => p.ShopId == shopId;
+                }
+
+                var products = _mapper.Map<IList<PriceOfShopResponseDto>>(_priceOfShop.GetAll(filter, order, filterByBrands, filterByShops));
                 if (products.Count > 0)
                 {
                     return Ok(products);

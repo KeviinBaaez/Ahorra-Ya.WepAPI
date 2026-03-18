@@ -23,9 +23,11 @@ namespace AhorraYa.Application
         }
 
         public IList<T> GetAll(Expression<Func<T, bool>>? filter = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null)
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+            Expression<Func<T, bool>>? filterByX1 = null,
+            Expression<Func<T, bool>>? filterByX2 = null)
         {
-            return _repository.GetAll(filter, orderBy);
+            return _repository.GetAll(filter, orderBy, filterByX1, filterByX2);
         }
 
         public T GetById(int id)

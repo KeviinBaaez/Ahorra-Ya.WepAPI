@@ -1,0 +1,109 @@
+﻿@model IEnumerable<AhorraYa.WebClient.ViewModels.PricesOfShops.PriceOfShopListVm>
+
+<div class="card shadow rounded mt-4 mb-5">
+
+    <!-- HEADER -->
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Product Prices</h4>
+    </div>
+
+    <!-- Filtros-->
+    <form method="get" asp-action="Index" class="mb-4 p-3 border rounded shadow bg-light">
+        <div class="row g-3 align-items-end">
+
+            <!-- Search -->
+            <div class="col-4 ">
+                <label class="form-label mb-0">Search Text</label>
+                <div class="input-group">
+                    <input type="text"
+                           class="form-control"
+                           name="searchText"
+                           value="@(ViewBag.CurrentSearchText ?? "")"
+                           placeholder="Enter product name or part of it" />
+                    <button class="btn btn-primary" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Shop -->
+            <div class="col-3">
+                <label class="p-0" >Shops</label>
+                <select class="form-select"
+                        name="shopId"
+                        onchange="this.form.submit()"
+                        asp-items="@(new SelectList(ViewBag.Shops, "Value", "Text", ViewBag.CurrentShopId))">
+
+                    <option value="">-- Select Shop --</option>
+                </select>
+            </div>
+
+            <!-- Brand -->
+            <div class="col-3">
+                <label class="p-0">Brands</label>
+                <select class="form-select"
+                        name="brandId"
+                        onchange="this.form.submit()"
+                        asp-items="@(new SelectList(ViewBag.Brands, "Value", "Text", ViewBag.CurrentBrandId))">
+
+                    <option value="">-- Select Brand --</option>
+                </select>
+            </div>
+
+
+            <!-- Clear -->
+            <div class="col-2 d-grid">
+                <a class="btn btn-secondary"
+                   href="@Url.Action("Index")">
+                    Clear
+                </a>
+            </div>
+
+        </div>
+    </form>
+
+    <!-- Productos -->
+    <div class="card-body">
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-warning">
+                No hay productos disponibles
+            </div>
+        }
+        else
+        {
+            <div class="row">
+
+                @foreach (var item in Model)
+                {
+                    <div class="col-md-3 mb-4">
+
+                        <div class="card h-100 shadow-sm text-center p-3">
+
+                            <!-- Imagen / placeholder -->
+                            <div class="border mb-3 d-flex align-items-center justify-content-center"
+                                 style="height:165px;">
+                                @if (!string.IsNullOrEmpty(item.Product))
+                                {
+                                    <img src="@item.ProductImage" class="img-fluid" style="max-width:auto; max-height:150px;"/>
+                                }
+                            </div>
+
+                            <!-- Info -->
+                            <div>
+                                <strong>@item.Product</strong><br />
+                                <span class="text-success fw-bold">$@item.Price</span><br />
+                                <small class="text-muted">@item.ShopName</small>
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+                
+            </div>
+        }
+
+    </div>
+</div>

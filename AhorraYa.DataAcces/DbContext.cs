@@ -23,12 +23,22 @@ namespace AhorraYa.DataAccess
         }
 
         public IList<T> GetAll(Expression<Func<T, bool>>? filter = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null)
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+            Expression<Func<T, bool>>? filterByX1 = null,
+            Expression<Func<T, bool>>? filterByX2 = null)
         {
             IQueryable<T> query = _Items.AsQueryable();
             if (filter != null)
             {
                 query = query.Where(filter);
+            }
+            if(filterByX1 != null)
+            {
+                query = query.Where(filterByX1);
+            }
+            if (filterByX2 != null)
+            {
+                query = query.Where(filterByX2);
             }
             if (orderBy != null)
             {
