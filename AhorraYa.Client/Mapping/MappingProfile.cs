@@ -3,6 +3,7 @@ using AhorraYa.Application.Dtos.Category;
 using AhorraYa.Application.Dtos.City;
 using AhorraYa.Application.Dtos.Country;
 using AhorraYa.Application.Dtos.Location;
+using AhorraYa.Application.Dtos.PriceOfShop;
 using AhorraYa.Application.Dtos.Product;
 using AhorraYa.Application.Dtos.Province;
 using AhorraYa.Application.Dtos.Shop;
@@ -11,6 +12,7 @@ using AhorraYa.WebClient.ViewModels.Categories;
 using AhorraYa.WebClient.ViewModels.Cities;
 using AhorraYa.WebClient.ViewModels.Countries;
 using AhorraYa.WebClient.ViewModels.Locations;
+using AhorraYa.WebClient.ViewModels.PricesOfShops;
 using AhorraYa.WebClient.ViewModels.Product;
 using AhorraYa.WebClient.ViewModels.Provinces;
 using AhorraYa.WebClient.ViewModels.Shops;
@@ -30,6 +32,14 @@ namespace AhorraYa.WebClient.Mapping
             LoadCountryMapping();
             LoadProvinceMapping();
             LoadCityMapping();
+            LoadPriceOfShopMapping();
+        }
+
+        private void LoadPriceOfShopMapping()
+        {
+            CreateMap<PriceOfShopRequestDto, PriceOfShopEditVm>().ReverseMap();
+            CreateMap<PriceOfShopResponseDto, PriceOfShopListVm>().ReverseMap();
+
         }
 
         private void LoadCityMapping()

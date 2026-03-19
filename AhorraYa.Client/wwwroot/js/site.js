@@ -36,3 +36,20 @@ function previewImage(event) {
     };
     reader.readAsDataURL(file);
 }
+
+function selectProduct(id, name, imageUrl) {
+
+    document.getElementById("ProductId").value = id;
+
+    document.getElementById("selectedProduct").innerHTML = `
+                <div class="card shadow-sm p-2" style="max-width:200px;">
+                    <img src="${imageUrl}" class="img-fluid" style="height:120px; object-fit:contain;">
+                    <div class="text-center mt-2">
+                        <strong>${name}</strong>
+                    </div>
+                </div>
+            `;
+
+    var modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
+    modal.hide();
+}
