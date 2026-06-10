@@ -1,4 +1,4 @@
-﻿﻿.nav-link {
+﻿/*﻿.nav-link {
     border-radius: 30px;
     background-color: transparent;
     transition: background-color 0.5s, color 0.5s, transform 0.3s;
@@ -9,7 +9,7 @@
     background-color: #B0A9AF;
     color: #007bff;
     transform: scale(1.05);
-}
+}*/
 
 ﻿.btnLogin {
     border-radius: 30px;
@@ -23,3 +23,29 @@
     color: #007bff;
     transform: scale(1.05);
 }
+
+/* Mejoras de interacción para la barra de navegación */
+.navbar-nav .nav-link {
+    color: #495057;
+    transition: all 0.2s ease-in-out;
+}
+
+    .navbar-nav .nav-link:hover {
+        color: #0d6efd !important;
+        background-color: #f8f9fa;
+    }
+
+/* Ajuste para los títulos internos del dropdown de administración */
+.dropdown-header {
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+.dropdown-item {
+    transition: background-color 0.15s ease;
+}
+
+    .dropdown-item:hover {
+        background-color: #f1f3f5;
+        color: #0d6efd;
+    }

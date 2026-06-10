@@ -1,0 +1,44 @@
+﻿@model RegisterEditMv
+
+<div class="container d-flex justify-content-center align-items-center mt-5 row">
+    <form asp-action="Register" asp-controller="Logins" method="post" class="w-100 col-12" style="max-width:400px;">
+
+        <h1 class="text-center mt-5 mb-5">
+            <b>Bienvenido</b>
+        </h1>
+
+        <!-- Name -->
+        <div class="form-outline mb-4">
+            <label class="form-label" for="email">Ingrese su Nombre</label>
+            <input type="text" class="form-control" asp-for="Name" />
+        </div>
+        <!-- UserName -->
+        <div class="form-outline mb-4">
+            <label class="form-label" for="email">Ingrese su Nombre de Usuario</label>
+            <input type="text" class="form-control" asp-for="UserName" />
+        </div>
+        <!-- Email -->
+        <div class="form-outline mb-4">
+            <label class="form-label" for="email">Ingrese una dirección de correo electronico</label>
+            <input type="text" class="form-control" asp-for="Email" />
+        </div>
+
+        <!-- Password -->
+        <div class="form-outline mb-4">
+            <input type="password" id="password" class="form-control" asp-for="Password" />
+            <label class="form-label" for="password">Password</label>
+        </div>
+        <!-- ConfirmPassword -->
+        <div class="form-outline mb-4">
+            <input type="password" id="password" class="form-control" asp-for="ConfirmPassword" />
+            <label class="form-label" for="password">ConfirmPassword</label>
+        </div>
+
+        <!-- Button -->
+        <button type="submit" class="btn btn-primary w-100 mb-4">
+            Crear Cuenta
+        </button>
+
+
+    </form>
+</div> 

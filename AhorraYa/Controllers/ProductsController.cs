@@ -38,7 +38,7 @@ namespace AhorraYa.WebApi.Controllers
         }
 
         [HttpGet("All")]
-        [Authorize(Roles = "Admin, ViewerPlus, Viewer")]
+        [Authorize(Roles = "Admin, ViewerPlus, User")]
         public async Task<IActionResult> GetAll(string? searchText, string? orderBy="A-Z")
         {
             try

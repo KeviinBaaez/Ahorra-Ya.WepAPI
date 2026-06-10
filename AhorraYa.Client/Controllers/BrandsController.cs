@@ -1,4 +1,5 @@
 ﻿using AhorraYa.Application.Dtos.Brand;
+using AhorraYa.WebClient.Filters;
 using AhorraYa.WebClient.Services;
 using AhorraYa.WebClient.ViewModels.Brands;
 using AutoMapper;
@@ -8,6 +9,7 @@ using System.Text;
 
 namespace AhorraYa.WebClient.Controllers
 {
+    [AdminOnly]
     public class BrandsController : Controller
     {
         private readonly ApiService _apiService;

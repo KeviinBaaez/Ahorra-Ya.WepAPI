@@ -1,4 +1,5 @@
-﻿using AhorraYa.Application.Dtos.Identity.User;
+﻿using AhorraYa.Abstractions;
+using AhorraYa.Application.Dtos.Identity.User;
 using AhorraYa.Application.Dtos.Login;
 using AhorraYa.Entities.MicrosoftIdentity;
 using AhorraYa.Services.Interfaces;
@@ -18,16 +19,18 @@ namespace AhorraYa.WebApi.Controllers.Identity
         private readonly ILogger<AuthController> _logger;
         private readonly IServiceTokenHandler _serviceTokenHandler;
         private readonly IMapper _mapper;
+        private readonly IEmailService _emailService;
 
         public AuthController(UserManager<User> userManager,
               ILogger<AuthController> logger,
               IServiceTokenHandler serviceTokenHandler,
-              IMapper mapper)
+              IMapper mapper, IEmailService emailService)
         {
             _userManager = userManager;
             _logger = logger;
             _serviceTokenHandler = serviceTokenHandler;
             _mapper = mapper;
+            _emailService = emailService;
         }
 
         [HttpPost]
@@ -46,12 +49,24 @@ namespace AhorraYa.WebApi.Controllers.Identity
                     }
                     var newUser = await _userManager.CreateAsync(new User()
                     {
-                        Name = user.UserName,
+                        Name = user.Name,
                         UserName = user.UserName,
                         Email = user.Email
                     }, user.Password);
                     if (newUser.Succeeded)
                     {
+                        var createdUser = await _userManager.FindByEmailAsync(user.Email);
+
+                        await _userManager.AddToRoleAsync(createdUser, "User");
+
+                        // GENERACIÓN DEL CÓDIGO DE 6 DÍGITOS NATIVO DE IDENTITY
+                        string codigoDeSeisDigitos = await _userManager.GenerateTwoFactorTokenAsync(createdUser, "Email");
+
+                        // ENVÍO DE MAIL REAL
+                        await _emailService.SendVerificationEmailAsync(createdUser.Email, codigoDeSeisDigitos);
+                        _logger.LogInformation($"Código generado para {createdUser.UserName}: {codigoDeSeisDigitos}");
+
+
                         var newUserResponse = _mapper.Map<UserRegisterResponseDto>(user);
                         return Ok(newUserResponse);
                     }
@@ -60,14 +75,51 @@ namespace AhorraYa.WebApi.Controllers.Identity
                         return BadRequest(newUser.Errors.Select(e => e.Description).ToList());
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-
+                    _logger.LogError(ex, "Error durante el registro de usuario");
                     throw;
                 }
             }
             return BadRequest("The data is invalid");
         }
+
+        [HttpPost]
+        [Route("VerifyCode")]
+        [AllowAnonymous]
+        public async Task<IActionResult> VerifyCode([FromBody] VerifyCodeRequestDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Invalid Data");
+            }
+
+            var user = await _userManager.FindByNameAsync(request.UserName);
+            if (user == null)
+            {
+                return NotFound("User nor found");
+            }
+
+            // Valida el token de 6 dígitos contra la infraestructura interna de Identity
+            var isValid = await _userManager.VerifyTwoFactorTokenAsync(user, "Email", request.Code);
+
+            if (!isValid)
+            {
+                return BadRequest("El código es incorrecto o ya expiró.");
+            }
+
+            // Si es válido, actualizamos la columna EmailConfirmed a true (1)
+            user.EmailConfirmed = true;
+            var updateResult = await _userManager.UpdateAsync(user);
+
+            if (!updateResult.Succeeded)
+            {
+                return BadRequest("Error al activar la cuenta.");
+            }
+
+            return Ok(new { message = "Cuenta Activada con éxito." });
+        }
+
 
         [HttpPost]
         [Route("Login")]
@@ -88,6 +140,15 @@ namespace AhorraYa.WebApi.Controllers.Identity
                     
                 if (existUser != null)
                 {
+                    if(!existUser.EmailConfirmed)
+                    {
+                        return BadRequest(new LoginUserResponseDto()
+                        {
+                            Login = false,
+                            Errores = new List<string> { "Debes confirmar tu cuenta mediante el código enviado a tu mail antes de iniciar sesión." }
+                        });
+                    }
+
                     var isCorrect = await _userManager.CheckPasswordAsync(existUser, userLogin.Password);
                     if (isCorrect)
                     {
@@ -108,7 +169,8 @@ namespace AhorraYa.WebApi.Controllers.Identity
                                 Login = true,
                                 Token = jwt,
                                 UserName = existUser.UserName,
-                                Mail = existUser.Email
+                                Mail = existUser.Email,
+                                Role = roles.FirstOrDefault()
                             });
                         }
                         catch (Exception)

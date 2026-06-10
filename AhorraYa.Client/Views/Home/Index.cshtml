@@ -1,5 +1,123 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+    var role = Context.Session.GetString("Role");
+}
+
+@if (role == "Admin")
+{
+    <div class="container mt-5">
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold text-primary">Ahorra Ya - Panel de Control</h1>
+            <p class="lead">Sistema de gestión de inventario y precios.</p>
+            <hr class="w-25 mx-auto" />
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow border-0">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-check-circle"></i> Módulos Disponibles (MVP)</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Actualmente, el **WebClient (MVC)** tiene operativos los siguientes catálogos con CRUD completo, búsqueda y ordenamiento:</p>
+                        <div class="list-group">
+                            <a href="@Url.Action("Index", "PricesOfShops")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span><strong>PricesOfShops</strong> (Precios de los Productos)</span>
+                                <span class="badge bg-primary rounded-pill">Activo</span>
+                            </a>
+                            <a href="@Url.Action("Index", "Products")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span><strong>Products</strong> (Productos)</span>
+                                <span class="badge bg-primary rounded-pill">Activo</span>
+                            </a>
+                            <a href="@Url.Action("Index", "Brands")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span><strong>Brands</strong> (Marcas)</span>
+                                <span class="badge bg-primary rounded-pill">Activo</span>
+                            </a>
+                            <a href="@Url.Action("Index", "Categories")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span><strong>Categories</strong> (Categorías)</span>
+                                <span class="badge bg-primary rounded-pill">Activo</span>
+                            </a>
+                            <a href="@Url.Action("Index", "Shops")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span><strong>Shops</strong> (Tiendas)</span>
+                                <span class="badge bg-primary rounded-pill">Activo</span>
+                            </a>
+                            <a href="@Url.Action("Index", "Locations")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span><strong>Locations</strong> (Direcciones)</span>
+                                <span class="badge bg-primary rounded-pill">Activo</span>
+                            </a>
+                            <a href="@Url.Action("Index", "Cities")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span><strong>Cities</strong> (Ciudades)</span>
+                                <span class="badge bg-primary rounded-pill">Activo</span>
+                            </a>
+                            <a href="@Url.Action("Index", "Provinces")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span><strong>Provinces</strong> (Provincias)</span>
+                                <span class="badge bg-primary rounded-pill">Activo</span>
+                            </a>
+                            <a href="@Url.Action("Index", "Countries")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span><strong>Countries</strong> (Países)</span>
+                                <span class="badge bg-primary rounded-pill">Activo</span>
+                            </a>
+                        </div>
+                        <p class="text-muted mt-3 small">* El resto de las entidades están disponibles únicamente vía WebAPI por el momento.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row justify-content-center text-center py-5 my-4 rounded-4 shadow-sm" style="background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); color: white;">
+        <div class="col-md-9 col-lg-8">
+            <h1 class="display-4 fw-bold mb-3">Ahorra Ya</h1>
+            <p class="lead mb-4">Compará precios en los distintos supermercados de tu ciudad y encontrá la mejor oferta.</p>
+
+            <form action="@Url.Action("Index", "PricesOfShops")" method="get" class="mt-4">
+                <div class="input-group input-group-lg shadow">
+                    <input type="text" name="searchText" class="form-control border-0" placeholder="¿Qué producto buscás hoy? (Ej: Leche, Azúcar...)" aria-label="Buscar producto">
+                    <button class="btn btn-dark px-4" type="submit">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="container my-5 text-center">
+        <h3 class="fw-bold mb-4 text-secondary">¿Qué querés hacer hoy?</h3>
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-5">
+                <div class="card h-100 shadow-sm border-0 p-3">
+                    <div class="card-body">
+                        <div class="fs-1 text-primary mb-3"><i class="bi bi-shop"></i></div>
+                        <h4 class="card-title fw-bold">Comparar Precios</h4>
+                        <p class="card-text text-muted">Ingresá al catálogo completo de productos con sus respectivos precios actualizados por comercio.</p>
+                        <a href="@Url.Action("Index", "PricesOfShops")" class="btn btn-outline-primary mt-2 fw-bold w-100">
+                            Ver Listado de Precios
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="card h-100 shadow-sm border-0 p-3">
+                    <div class="card-body">
+                        <div class="fs-1 text-success mb-3"><i class="bi bi-lightning-charge"></i></div>
+                        <h4 class="card-title fw-bold">Búsquedas Rápidas</h4>
+                        <p class="card-text text-muted">Buscá de manera directa los productos esenciales de la canasta básica familiar.</p>
+                        <div class="d-flex flex-wrap gap-2 justify-content-center mt-3">
+                            <a href="@Url.Action("Index", "PricesOfShops", new { searchText = "Leche" })" class="btn btn-sm btn-light border">🥛 Leche</a>
+                            <a href="@Url.Action("Index", "PricesOfShops", new { searchText = "Azúcar" })" class="btn btn-sm btn-light border">🧂 Azúcar</a>
+                            <a href="@Url.Action("Index", "PricesOfShops", new { searchText = "Yerba" })" class="btn btn-sm btn-light border">🧉 Yerba</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@* @{
+    ViewData["Title"] = "Home Page";
 }
 
 <div class="container mt-5">
@@ -60,4 +178,4 @@
             </div>
         </div>
     </div>
-</div>
+</div> *@

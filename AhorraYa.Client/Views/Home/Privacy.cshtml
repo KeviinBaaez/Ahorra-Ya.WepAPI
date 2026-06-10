@@ -1,6 +1,46 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Política de Privacidad";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-9 shadow-sm p-5 bg-white rounded-4 border">
+            <h1 class="fw-bold text-primary mb-3"><i class="bi bi-shield-lock-fill text-success"></i> @ViewData["Title"]</h1>
+            <p class="text-muted lead">En <strong>AhorraYa</strong>, nos tomamos muy en serio la seguridad y la privacidad de tus datos.</p>
+            <hr class="my-4">
+
+            <section class="mb-4">
+                <h4 class="fw-bold text-dark"><i class="bi bi-key me-2 text-primary"></i> 1. Datos que Recolectamos</h4>
+                <p class="text-muted">Para el correcto funcionamiento de la plataforma, únicamente solicitamos y almacenamos los datos necesarios para gestionar tu cuenta de usuario:</p>
+                <ul class="text-muted">
+                    <li>Nombre de usuario / Identificador.</li>
+                    <li>Dirección de correo electrónico.</li>
+                    <li>Roles y permisos dentro del sistema para el control de accesos.</li>
+                </ul>
+            </section>
+
+            <section class="mb-4">
+                <h4 class="fw-bold text-dark"><i class="bi bi-cpu me-2 text-primary"></i> 2. Uso de la Información</h4>
+                <p class="text-muted">La información recolectada se utiliza exclusivamente para las siguientes finalidades:</p>
+                <ul class="text-muted">
+                    <li>Validar tu identidad al iniciar sesión mediante sesiones seguras del servidor.</li>
+                    <li>Personalizar tu experiencia dentro de la plataforma (como mostrar tu nombre en la barra de navegación).</li>
+                    <li>Garantizar que solo los usuarios autorizados tengan acceso a los paneles de administración y carga de datos.</li>
+                </ul>
+            </section>
+
+            <section class="mb-4">
+                <h4 class="fw-bold text-dark"><i class="bi bi-eye-slash me-2 text-primary"></i> 3. Seguridad y Terceros</h4>
+                <p class="text-muted"><strong>AhorraYa</strong> no vende, alquila ni comparte tus datos personales con ninguna empresa, comercio ni terceras partes. Tus contraseñas y credenciales se procesan de forma segura utilizando mecanismos de encriptación en nuestra Web API.</p>
+            </section>
+
+            <section class="mb-4">
+                <h4 class="fw-bold text-dark"><i class="bi bi-cookie me-2 text-primary"></i> 4. Uso de Cookies y Almacenamiento</h4>
+                <p class="text-muted">Utilizamos mecanismos de almacenamiento temporal (como Session Cookies) con el único fin de mantener tu sesión activa mientras navegás por las distintas páginas de precios y sucursales. Al cerrar tu navegador o cerrar sesión, estos datos se destruyen.</p>
+            </section>
+
+            <hr class="my-4">
+            <p class="text-center text-muted small mb-0">Última actualización: Junio 2026 | AhorraYa.Client</p>
+        </div>
+    </div>
+</div>

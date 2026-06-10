@@ -1,4 +1,5 @@
 ﻿using AhorraYa.Application.Dtos.Product;
+using AhorraYa.WebClient.Filters;
 using AhorraYa.WebClient.Services;
 using AhorraYa.WebClient.ViewModels.Brands;
 using AhorraYa.WebClient.ViewModels.Categories;
@@ -11,6 +12,7 @@ using System.Text;
 
 namespace AhorraYa.WebClient.Controllers
 {
+    [AdminOnly]
     public class ProductsController : Controller
     {
         private readonly ApiService _apiService;

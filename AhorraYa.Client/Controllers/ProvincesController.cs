@@ -1,4 +1,5 @@
 ﻿using AhorraYa.Application.Dtos.Province;
+using AhorraYa.WebClient.Filters;
 using AhorraYa.WebClient.Services;
 using AhorraYa.WebClient.ViewModels.Countries;
 using AhorraYa.WebClient.ViewModels.Provinces;
@@ -11,6 +12,7 @@ using System.Text;
 
 namespace AhorraYa.WebClient.Controllers
 {
+    [AdminOnly]
     public class ProvincesController : Controller
     {
         private readonly ApiService _apiService;

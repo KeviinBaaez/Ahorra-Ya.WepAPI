@@ -1,4 +1,5 @@
 ﻿using AhorraYa.Application.Dtos.Shop;
+using AhorraYa.WebClient.Filters;
 using AhorraYa.WebClient.Services;
 using AhorraYa.WebClient.ViewModels.Locations;
 using AhorraYa.WebClient.ViewModels.Shops;
@@ -6,11 +7,11 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
-using System.Net.Http.Headers;
 using System.Text;
 
 namespace AhorraYa.WebClient.Controllers
 {
+    [AdminOnly]
     public class ShopsController : Controller
     {
         private readonly ApiService _apiService;

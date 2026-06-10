@@ -1,14 +1,15 @@
 ﻿using AhorraYa.Application.Dtos.Category;
+using AhorraYa.WebClient.Filters;
 using AhorraYa.WebClient.Services;
 using AhorraYa.WebClient.ViewModels.Categories;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Net.Http.Headers;
 using System.Text;
 
 namespace AhorraYa.WebClient.Controllers
 {
+    [AdminOnly]
     public class CategoriesController : Controller
     {
         private readonly ApiService _apiService;

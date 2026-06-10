@@ -91,6 +91,7 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped(typeof(IApplication<>), typeof(Application<>));
 builder.Services.AddScoped(typeof(IDbContext<>), typeof(DbContext<>));
 builder.Services.AddScoped(typeof(IServiceTokenHandler), typeof(ServiceTokenHandler));
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 
@@ -119,6 +120,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
