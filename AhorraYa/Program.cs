@@ -12,6 +12,7 @@ using AhorraYa.WebApi.Seed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -19,6 +20,17 @@ using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+////////////////////////API PRUEBA////////////////////////////////
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy => policy.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+});
+////////////////////////API PRUEBA////////////////////////////////
+
 
 // Add services to the container.
 
@@ -48,10 +60,18 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
+//builder.Services.AddDbContext<DbDataAccess>(options =>
+//{
+//    options.UseSqlServer(builder.Configuration
+//        .GetConnectionString("MyConnection"),
+//        o => o.MigrationsAssembly("AhorraYa.WebApi"));
+//    options.UseLazyLoadingProxies();
+//});
+
 builder.Services.AddDbContext<DbDataAccess>(options =>
 {
     options.UseSqlServer(builder.Configuration
-        .GetConnectionString("MyConnection"),
+        .GetConnectionString("DefaultConnection"),
         o => o.MigrationsAssembly("AhorraYa.WebApi"));
     options.UseLazyLoadingProxies();
 });
@@ -94,6 +114,14 @@ builder.Services.AddScoped(typeof(IServiceTokenHandler), typeof(ServiceTokenHand
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
+////////////////////////API PRUEBA////////////////////////////////
+app.UseCors("AllowAll");
+
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+
+////////////////////////API PRUEBA////////////////////////////////
 
 try
 {
