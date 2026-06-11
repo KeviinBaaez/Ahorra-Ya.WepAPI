@@ -2,11 +2,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copiamos el archivo de proyecto apuntando a la carpeta real
+# Copiamos el archivo de proyecto apuntando a la carpeta exacta
 COPY ["AhorraYa.Client/AhorraYa.Client.csproj", "AhorraYa.Client/"]
 RUN dotnet restore "AhorraYa.Client/AhorraYa.Client.csproj"
 
-# Copiamos absolutamente todo el monorepo para la compilación
+# Copiamos absolutamente todo el monorepo
 COPY . .
 WORKDIR "/src/AhorraYa.Client"
 RUN dotnet publish "AhorraYa.Client.csproj" -c Release -o /app/publish /p:UseAppHost=false
