@@ -9,7 +9,7 @@ COPY . .
 RUN dotnet restore "AhorraYa/"
 
 # Compilamos y publicamos el proyecto de la API en modo Release
-RUN dotnet publish "AhorraYa/" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "AhorraYa.WebApi.csproj/" -c Release -o /app/publish /p:UseAppHost=false
 
 # 2. Etapa de ejecución (Runtime de .NET 8)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final

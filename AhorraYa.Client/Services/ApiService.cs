@@ -17,7 +17,8 @@ namespace AhorraYa.WebClient.Services
         public HttpClient CreateClient()
         {
             var client = _factory.CreateClient();
-            client.BaseAddress = new Uri("https://localhost:7284/");
+             client.BaseAddress = new Uri("https://ahorra-ya-wepapi.onrender.com");
+            // client.BaseAddress = new Uri("https://localhost:7284/");
 
             var token = _httpContextAccessor.HttpContext.Session.GetString("JWToken");
 
