@@ -72,9 +72,12 @@ namespace AhorraYa.WebApi.Controllers.Identity
 
                         _logger.LogInformation("Iniciando envío de email...");
 
-                        await _emailService.SendVerificationEmailAsync(
-                            createdUser.Email,
-                            codigoDeSeisDigitos);
+                        _logger.LogInformation(
+    $"CODIGO PARA {createdUser.UserName}: {codigoDeSeisDigitos}"
+);
+                        //await _emailService.SendVerificationEmailAsync(
+                        //    createdUser.Email,
+                        //    codigoDeSeisDigitos);
 
                         _logger.LogInformation("Email enviado correctamente");
 

@@ -45,10 +45,12 @@ namespace AhorraYa.Services.Services
                 {
                     Console.WriteLine("PASO 1 - Intentando conectar");
 
+                    client.Timeout = 10000; // 10 segundos
+
                     await client.ConnectAsync(
-                        _configuration["EmailSettings:SmtpServer"],
-                        int.Parse(_configuration["EmailSettings:Port"]),
-                        MailKit.Security.SecureSocketOptions.StartTls
+                        "smtp.gmail.com",
+                        465,
+                        MailKit.Security.SecureSocketOptions.SslOnConnect
                     );
 
                     Console.WriteLine("PASO 2 - Conectado");
