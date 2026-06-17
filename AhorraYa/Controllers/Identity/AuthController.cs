@@ -55,21 +55,50 @@ namespace AhorraYa.WebApi.Controllers.Identity
                     }, user.Password);
                     if (newUser.Succeeded)
                     {
+                        _logger.LogInformation("Usuario creado correctamente");
+
                         var createdUser = await _userManager.FindByEmailAsync(user.Email);
+
+                        _logger.LogInformation("Usuario recuperado de la BD");
 
                         await _userManager.AddToRoleAsync(createdUser, "User");
 
-                        // GENERACIÓN DEL CÓDIGO DE 6 DÍGITOS NATIVO DE IDENTITY
-                        string codigoDeSeisDigitos = await _userManager.GenerateTwoFactorTokenAsync(createdUser, "Email");
+                        _logger.LogInformation("Rol User asignado");
 
-                        // ENVÍO DE MAIL REAL
-                        await _emailService.SendVerificationEmailAsync(createdUser.Email, codigoDeSeisDigitos);
-                        _logger.LogInformation($"Código generado para {createdUser.UserName}: {codigoDeSeisDigitos}");
+                        string codigoDeSeisDigitos =
+                            await _userManager.GenerateTwoFactorTokenAsync(createdUser, "Email");
 
+                        _logger.LogInformation($"Código generado: {codigoDeSeisDigitos}");
+
+                        _logger.LogInformation("Iniciando envío de email...");
+
+                        await _emailService.SendVerificationEmailAsync(
+                            createdUser.Email,
+                            codigoDeSeisDigitos);
+
+                        _logger.LogInformation("Email enviado correctamente");
 
                         var newUserResponse = _mapper.Map<UserRegisterResponseDto>(user);
+
                         return Ok(newUserResponse);
                     }
+                    //if (newUser.Succeeded)
+                    //{
+                    //    var createdUser = await _userManager.FindByEmailAsync(user.Email);
+
+                    //    await _userManager.AddToRoleAsync(createdUser, "User");
+
+                    //    // GENERACIÓN DEL CÓDIGO DE 6 DÍGITOS NATIVO DE IDENTITY
+                    //    string codigoDeSeisDigitos = await _userManager.GenerateTwoFactorTokenAsync(createdUser, "Email");
+
+                    //    // ENVÍO DE MAIL REAL
+                    //    await _emailService.SendVerificationEmailAsync(createdUser.Email, codigoDeSeisDigitos);
+                    //    _logger.LogInformation($"Código generado para {createdUser.UserName}: {codigoDeSeisDigitos}");
+
+
+                    //    var newUserResponse = _mapper.Map<UserRegisterResponseDto>(user);
+                    //    return Ok(newUserResponse);
+                    //}
                     else
                     {
                         return BadRequest(newUser.Errors.Select(e => e.Description).ToList());

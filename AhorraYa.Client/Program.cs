@@ -15,16 +15,22 @@ namespace AhorraYa.Client
             builder.Services.AddHttpClient();  
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<ApiService>();
-            builder.Services.AddSession();     
+            builder.Services.AddSession();
+
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession();
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Login/Error");
-                app.UseHsts();
-            }
+            //if (!app.Environment.IsDevelopment())
+            //{
+            //    app.UseExceptionHandler("/Login/Error");
+            //    app.UseHsts();
+            //}
+
+            app.UseDeveloperExceptionPage();
+
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

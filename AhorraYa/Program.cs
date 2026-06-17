@@ -12,7 +12,6 @@ using AhorraYa.WebApi.Seed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -117,9 +116,6 @@ var app = builder.Build();
 ////////////////////////API PRUEBA////////////////////////////////
 app.UseCors("AllowAll");
 
-app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
 
 ////////////////////////API PRUEBA////////////////////////////////
 
@@ -162,7 +158,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 
-using(var scope = app.Services.CreateScope())
+using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     await IdentitySeeder.SeedAsync(services);
